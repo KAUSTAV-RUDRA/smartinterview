@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Dashboard - SkillPalavar</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <style>
         body {
@@ -31,10 +32,10 @@
         .header h1 {
             margin: 0;
             font-size: 2.5rem;
-            
-            
-            
-            
+
+
+
+
         }
 
         .header-actions {
@@ -44,11 +45,11 @@
         }
 
         .btn-primary {
-            
+
             padding: 0.75rem 1.5rem;
             border: none;
             border-radius: 8px;
-            
+
             text-decoration: none;
             cursor: pointer;
             font-weight: 600;
@@ -64,11 +65,11 @@
         }
 
         .btn-secondary {
-            
+
             border: 1px solid var(--card-border);
             padding: 0.75rem 1.5rem;
             border-radius: 8px;
-            
+
             text-decoration: none;
             cursor: pointer;
             font-weight: 500;
@@ -76,7 +77,7 @@
         }
 
         .btn-secondary:hover {
-            
+
             border-color: rgba(255, 255, 255, 0.3);
         }
 
@@ -88,8 +89,8 @@
         }
 
         .stat-card {
-            
-            
+
+
             border: 1px solid var(--card-border);
             padding: 1.5rem;
             border-radius: 12px;
@@ -98,7 +99,7 @@
         }
 
         .stat-card:hover {
-            
+
             border-color: rgba(255, 255, 255, 0.2);
             transform: translateY(-5px);
         }
@@ -119,12 +120,12 @@
 
         .stat-resume {
             color: #34d399;
-            
+
         }
 
         .stat-quiz {
             color: var(--primary-color);
-            
+
         }
 
         .stat-unit {
@@ -133,8 +134,8 @@
         }
 
         .card {
-            
-            
+
+
             border: 1px solid var(--card-border);
             padding: 2rem;
             border-radius: 12px;
@@ -144,7 +145,7 @@
         .card h2 {
             margin: 0 0 1.5rem 0;
             font-size: 1.75rem;
-            
+
         }
 
         .card h3 {
@@ -156,7 +157,7 @@
         .progress-bar {
             width: 100%;
             height: 10px;
-            
+
             border-radius: 10px;
             overflow: hidden;
             margin: 0.75rem 0 1rem 0;
@@ -164,7 +165,7 @@
 
         .progress-fill {
             height: 100%;
-            
+
             border-radius: 10px;
             transition: width 0.5s ease;
         }
@@ -313,7 +314,7 @@
         .empty-state {
             text-align: center;
             padding: 3rem 1.5rem;
-            
+
             border-radius: 8px;
         }
 
@@ -371,12 +372,12 @@
 <body>
     <div class="dashboard-container">
         <div class="header">
-            <h1>📊 My Dashboard</h1>
+            <h1><i class="fa-solid fa-chart-pie" style="color: var(--primary-color); margin-right: 0.5rem;"></i> My
+                Dashboard</h1>
             <div class="header-actions">
-                <a href="/career_ai" class="btn-primary"
-                    style="">🤖 AI Counselor</a>
-                <a href="/apply" class="btn-primary">+ New Application</a>
-                <a href="/logout" class="btn-secondary">Log Out</a>
+                <a href="/career_ai" class="btn-primary" style=""><i class="fa-solid fa-robot"></i> AI Counselor</a>
+                <a href="/apply" class="btn-primary"><i class="fa-solid fa-file-signature"></i> New Application</a>
+                <a href="/logout" class="btn-secondary"><i class="fa-solid fa-arrow-right-from-bracket"></i> Log Out</a>
             </div>
         </div>
 
@@ -387,8 +388,7 @@
                 <div class="stat-label">Resume Score</div>
                 <div class="stat-value stat-resume">{{ candidate[7] or 0 }}<span class="stat-unit">/100</span></div>
                 <div class="progress-bar">
-                    <div class="progress-fill"
-                        style="width: {{ (candidate[7] or 0) * 100 / 100 }}%; ">
+                    <div class="progress-fill" style="width: {{ (candidate[7] or 0) * 100 / 100 }}%; ">
                     </div>
                 </div>
                 <div style="font-size: 0.85rem; color: var(--text-muted);">AI Evaluated</div>
@@ -397,8 +397,7 @@
                 <div class="stat-label">Quiz Score</div>
                 <div class="stat-value stat-quiz">{{ candidate[5] }}<span class="stat-unit">/100</span></div>
                 <div class="progress-bar">
-                    <div class="progress-fill"
-                        style="width: {{ candidate[5] }}%; "></div>
+                    <div class="progress-fill" style="width: {{ candidate[5] }}%; "></div>
                 </div>
                 <div style="font-size: 0.85rem; color: var(--text-muted);">Skills Assessment</div>
             </div>
@@ -407,8 +406,7 @@
                 <div class="stat-value" style="color: #fbbf24;">{{ candidate[3] }}<span class="stat-unit">yrs</span>
                 </div>
                 <div class="progress-bar">
-                    <div class="progress-fill"
-                        style="width: {{ min(candidate[3] * 10, 100) }}%; ">
+                    <div class="progress-fill" style="width: {{ min(candidate[3] * 10, 100) }}%; ">
                     </div>
                 </div>
                 <div style="font-size: 0.85rem; color: var(--text-muted);">Professional</div>
@@ -418,7 +416,7 @@
         <!-- Candidate Summary Card -->
         <div class="card">
             <div class="section-title">
-                <div class="badge-icon badge-info">👤</div>
+                <div class="badge-icon badge-info"><i class="fa-solid fa-user"></i></div>
                 <div>Application Summary</div>
             </div>
 
@@ -445,7 +443,7 @@
         {% if missing_skills %}
         <div class="card">
             <div class="section-title">
-                <div class="badge-icon badge-warning">⚠️</div>
+                <div class="badge-icon badge-warning"><i class="fa-solid fa-triangle-exclamation"></i></div>
                 <div>Skills to Master</div>
             </div>
             <p style="color: var(--text-muted); margin-bottom: 1.5rem;">These skills are required by available job
@@ -471,7 +469,7 @@
         <!-- Recommended Jobs Card -->
         <div class="card">
             <div class="section-title">
-                <div class="badge-icon badge-success">🎯</div>
+                <div class="badge-icon badge-success"><i class="fa-solid fa-bullseye"></i></div>
                 <div>Recommended Positions</div>
             </div>
 
@@ -499,7 +497,8 @@
                 </div>
 
                 <div style="margin: 1rem 0;">
-                    <h4 style="color: var(--text-muted); margin-bottom: 0.75rem; font-size: 0.95rem;">Required Skills:</h4>
+                    <h4 style="color: var(--text-muted); margin-bottom: 0.75rem; font-size: 0.95rem;">Required Skills:
+                    </h4>
                     <div class="skills-container">
                         {% for skill in job[3].split(',') %}
                         <span class="skill-tag">{{ skill.strip() }}</span>
@@ -530,7 +529,8 @@
 
             {% else %}
             <div class="empty-state">
-                <div style="font-size: 2rem; margin-bottom: 1rem;">🔍</div>
+                <div style="font-size: 3rem; margin-bottom: 1rem; color: var(--primary-color);"><i
+                        class="fa-solid fa-magnifying-glass"></i></div>
                 <p><strong>No Matching Positions Yet</strong></p>
                 <p>Improve your quiz score and resume evaluation to unlock more job opportunities. Start a new
                     application to improve your scores!</p>
@@ -544,7 +544,8 @@
         <!-- Welcome Card -->
         <div class="card">
             <div style="text-align: center; padding: 2rem;">
-                <div style="font-size: 3rem; margin-bottom: 1rem;">🚀</div>
+                <div style="font-size: 4rem; margin-bottom: 1rem; color: var(--primary-color);"><i
+                        class="fa-solid fa-rocket"></i></div>
                 <h2 style="margin-bottom: 1rem; ">Welcome to SkillPalavar</h2>
                 <p style="margin-bottom: 1.5rem; color: var(--text-muted); font-size: 1.1rem;">
                     Begin your journey to find the perfect role that matches your skills and aspirations.
