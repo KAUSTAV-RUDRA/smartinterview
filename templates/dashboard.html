@@ -4,163 +4,640 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>Admin Dashboard - SkillPalavar</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <style>
-        .header-actions {
+        body {
+            min-height: 100vh;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            padding: 1.5rem;
+        }
+
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .admin-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .admin-header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .admin-header p {
+            margin: 0.25rem 0 0 0;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .btn-logout {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.75rem;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 0.5rem 0;
+        }
+
+        .stat-value.selected {
+            color: #10b981;
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+        }
+
+        .stat-value.rejected {
+            color: #ef4444;
+            text-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+        }
+
+        .stat-value.pending {
+            color: #f59e0b;
+            text-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2.5rem;
+        }
+
+        .card h2 {
+            margin: 0 0 1.5rem 0;
+            font-size: 1.75rem;
+            color: #f8fafc;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .badge-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 1.2rem;
+        }
+
+        .badge-primary {
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+        }
+
+        .graphs-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .graph-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            overflow: hidden;
+        }
+
+        .graph-title {
+            text-align: center;
+            color: #cbd5e1;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .graph-image {
+            max-width: 100%;
+            border-radius: 8px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            margin: 0 -2rem;
+            padding: 0 2rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+
+        table thead {
+            background: rgba(99, 102, 241, 0.1);
+            border-bottom: 2px solid rgba(99, 102, 241, 0.2);
+        }
+
+        table th {
+            padding: 1rem;
+            text-align: left;
+            color: #a5b4fc;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: #cbd5e1;
+        }
+
+        table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        table tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .candidate-name {
+            font-weight: 600;
+            color: #f8fafc;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .badge.selected {
+            background: rgba(16, 185, 129, 0.2);
+            color: #6ee7b7;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .badge.rejected {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .score-badge {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.4rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-right: 0.5rem;
+        }
+
+        .checkbox-cell {
+            width: 40px;
+        }
+
+        .checkbox-cell input {
+            width: 1.2rem;
+            height: 1.2rem;
+            cursor: pointer;
+            accent-color: #6366f1;
+        }
+
+        .job-form {
+            background: rgba(99, 102, 241, 0.05);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: white;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(99, 102, 241, 0.5);
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .compare-section {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: right;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+        }
+
+        .empty-state p {
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        @media (max-width: 1024px) {
+            .graphs-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .admin-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .admin-header h1 {
+                font-size: 2rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .job-form {
+                padding: 1.5rem;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            table th, table td {
+                padding: 0.75rem;
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="container" style="max-width: 900px; padding: 2rem 3rem;">
-        <div class="header-actions">
+    <div class="admin-container">
+        <!-- Header -->
+        <div class="admin-header">
             <div>
-                <h1 style="text-align: left; margin: 0;">Dashboard</h1>
-                <p class="subtitle" style="text-align: left; margin: 0; padding-top: 5px;">Candidate Submissions & AI
-                    Evaluations</p>
+                <h1>👨‍💼 Admin Dashboard</h1>
+                <p>Manage candidates, view rankings, and post job opportunities</p>
             </div>
-            <a href="/logout" class="badge"
-                style="text-decoration: none; color: white; background: rgba(255,255,255,0.1); border: 1px solid var(--card-border);">Log
-                Out</a>
+            <a href="/logout" class="btn-logout">Log Out</a>
         </div>
 
-        {% if job_graphs %}
-        <div style="margin-bottom: 2rem;">
-            {% for graph in job_graphs %}
-            <div
-                style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--card-border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;">
-                <h3
-                    style="color: #cbd5e1; margin-bottom: 1rem; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.5rem;">
-                    {{ graph.title }}</h3>
-                <div style="display: flex; justify-content: center; align-items: center;">
-                    <img src="{{ url_for('static', filename=graph.filename) }}?v={{ range(1, 10000) | random }}"
-                        alt="Candidate Rankings Graph" style="max-width: 100%; border-radius: 8px;">
-                </div>
+        <!-- Stats Section -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Submissions</div>
+                <div class="stat-value">{{ data | length }}</div>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">Candidates</div>
             </div>
-            {% endfor %}
+            <div class="stat-card">
+                <div class="stat-label">Selected</div>
+                <div class="stat-value selected">{{ (data | selectattr('6', 'equalto', 1) | list | length) }}</div>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">Approved</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Pending Review</div>
+                <div class="stat-value pending">{{ (data | selectattr('6', 'equalto', 0) | list | length) }}</div>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">Not Decided</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Active Job Posts</div>
+                <div class="stat-value" style="color: #818cf8;">{{ jobs | length }}</div>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">Positions</div>
+            </div>
+        </div>
+
+        <!-- Rankings Graphs -->
+        {% if job_graphs %}
+        <div class="card">
+            <div class="section-title">
+                <div class="badge-icon badge-primary">📊</div>
+                <div>Candidate Rankings</div>
+            </div>
+            <div class="graphs-container">
+                {% for graph in job_graphs %}
+                <div class="graph-card">
+                    <div class="graph-title">{{ graph.title }}</div>
+                    <img src="{{ url_for('static', filename=graph.filename) }}?v={{ range(1, 10000) | random }}" 
+                         alt="Candidate Rankings Graph" class="graph-image">
+                </div>
+                {% endfor %}
+            </div>
         </div>
         {% endif %}
 
-        <form method="POST" action="/compare">
-            <table style="width: 100%; margin-top: 1rem;">
-                <thead>
-                    <tr>
-                        <th>Compare</th>
-                        <th>ID</th>
-                        <th>Candidate Name</th>
-                        <th>Experience</th>
-                        <th>Skills Profile</th>
-                        <th>Scores (Res/Quiz)</th>
-                        <th>ML Predict</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for i in data %}
-                    <tr style="transition: all 0.3s; cursor: default;"
-                        onmouseover="this.style.background='rgba(99, 102, 241, 0.1)';"
-                        onmouseout="this.style.background='transparent';">
-                        <td><input type="checkbox" name="compare_ids" value="{{ i[0] }}"
-                                style="width: 1.2rem; height: 1.2rem; cursor: pointer;"></td>
-                        <td style="color: var(--text-muted); font-size: 0.9rem;">#{{ i[0] }}</td>
-                        <td><strong>{{ i[2] }}</strong></td>
-                        <td>{{ i[3] }} yrs</td>
-                        <td style="max-width: 250px;">
-                            <span class="badge"
-                                style="background: rgba(255,255,255,0.05); margin-bottom: 5px; display: inline-block;">Count:
-                                {{ i[4] }}</span>
-                            {% if i|length > 9 and i[9] %}
-                            <div style="font-size: 0.8rem; color: #cbd5e1; margin-top: 4px; line-height: 1.3;">{{ i[9]
-                                }}
-                            </div>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <div style="font-size: 0.85rem; margin-bottom: 3px;">Resume: <span
-                                    style="color: #34d399;">{{
-                                    i[7] or 0 }}/100</span></div>
-                            <div style="font-size: 0.85rem;">Quiz: <span style="color: #818cf8;">{{ i[5] }}/100</span>
-                            </div>
-                        </td>
-                        <td>
-                            {% if i[6] == 1 %}
-                            <span class="badge selected"
-                                style="box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);">Selected</span>
-                            {% else %}
-                            <span class="badge rejected">Rejected</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                    {% if not data %}
-                    <tr>
-                        <td colspan="7" style="text-align: center; color: #94a3b8; padding: 3rem;">No candidates have
-                            completed the flow yet.</td>
-                    </tr>
-                    {% endif %}
-                </tbody>
-            </table>
-
-            {% if data %}
-            <div style="margin-top: 1.5rem; text-align: right;">
-                <button type="submit"
-                    style="padding: 0.8rem 1.5rem; background: var(--primary-color); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: inline-block;">Compare
-                    Selected</button>
+        <!-- Candidates Table -->
+        <div class="card">
+            <div class="section-title">
+                <div class="badge-icon badge-primary">👥</div>
+                <div>Candidate Submissions</div>
             </div>
-            {% endif %}
-        </form>
-    </div>
 
-    <div class="container" style="max-width: 900px; padding: 0 3rem 3rem 3rem;">
-        <h2 style="margin-bottom: 1rem;">Manage Jobs</h2>
-        <form action="{{ url_for('add_job') }}" method="post"
-            style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem;">
-            <input type="text" name="title" placeholder="Job Title" required
-                style="flex: 1; padding: 0.75rem; background: var(--input-bg); border: 1px solid var(--border-color); color: white; border-radius: 8px;">
-            <input type="text" name="description" placeholder="Description" required
-                style="flex: 2; padding: 0.75rem; background: var(--input-bg); border: 1px solid var(--border-color); color: white; border-radius: 8px;">
-            <input type="text" name="skills_required" placeholder="Required Skills" required
-                style="flex: 1; padding: 0.75rem; background: var(--input-bg); border: 1px solid var(--border-color); color: white; border-radius: 8px;">
-            <input type="number" name="min_quiz_score" placeholder="Min Quiz" value="10" required
-                style="width: 100px; padding: 0.75rem; background: var(--input-bg); border: 1px solid var(--border-color); color: white; border-radius: 8px;">
-            <input type="number" name="min_resume_score" placeholder="Min Resume" value="75" required
-                style="width: 100px; padding: 0.75rem; background: var(--input-bg); border: 1px solid var(--border-color); color: white; border-radius: 8px;">
-            <button type="submit" class="btn"
-                style="padding: 0.75rem 1.5rem; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer;">Add
-                Job</button>
-        </form>
+            <form method="POST" action="/compare">
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="checkbox-cell">Compare</th>
+                                <th>ID</th>
+                                <th>Candidate Name</th>
+                                <th>Experience</th>
+                                <th>Skills</th>
+                                <th>Scores</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if data %}
+                                {% for candidate in data %}
+                                <tr>
+                                    <td class="checkbox-cell">
+                                        <input type="checkbox" name="compare_ids" value="{{ candidate[0] }}">
+                                    </td>
+                                    <td>#{{ candidate[0] }}</td>
+                                    <td>
+                                        <div class="candidate-name">{{ candidate[2] }}</div>
+                                        <div style="font-size: 0.85rem; color: var(--text-muted);">User ID: {{ candidate[1] }}</div>
+                                    </td>
+                                    <td>{{ candidate[3] }} years</td>
+                                    <td>
+                                        <div style="font-size: 0.85rem; margin-bottom: 0.5rem;">Count: <span style="color: #fbbf24;">{{ candidate[4] }}</span></div>
+                                        {% if candidate|length > 9 and candidate[9] %}
+                                        <div style="font-size: 0.8rem; color: #cbd5e1; line-height: 1.3;">
+                                            {{ candidate[9] | truncate(50) }}
+                                        </div>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="score-badge">Resume: <span style="color: #34d399;">{{ candidate[7] or 0 }}/100</span></div>
+                                        <div class="score-badge">Quiz: <span style="color: #818cf8;">{{ candidate[5] }}/100</span></div>
+                                    </td>
+                                    <td>
+                                        {% if candidate[6] == 1 %}
+                                        <span class="badge selected">✓ Selected</span>
+                                        {% else %}
+                                        <span class="badge rejected">⊘ Pending</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td colspan="7">
+                                    <div class="empty-state">
+                                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">📭</div>
+                                        <p>No candidates have completed the application flow yet.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
 
-        <table style="width: 100%;">
-            <thead>
-                <tr>
-                    <th>Job ID</th>
-                    <th>Title</th>
-                    <th>Description</th>
-                    <th>Requirements</th>
-                    <th>Min Scores</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for job in jobs %}
-                <tr>
-                    <td style="color: var(--text-muted); font-size: 0.9rem;">#{{ job[0] }}</td>
-                    <td><strong>{{ job[1] }}</strong></td>
-                    <td>{{ job[2] }}</td>
-                    <td><span class="badge" style="background: rgba(255,255,255,0.05);">{{ job[3] }}</span></td>
-                    <td style="font-size: 0.9rem;">Quiz: {{ job[4] }}<br>Resume: {{ job[5] }}</td>
-                </tr>
-                {% endfor %}
-                {% if not jobs %}
-                <tr>
-                    <td colspan="5" style="text-align: center; color: #94a3b8; padding: 2rem;">No jobs posted yet.</td>
-                </tr>
+                {% if data %}
+                <div class="compare-section">
+                    <button type="submit" class="btn-primary">
+                        📊 Compare Selected Candidates
+                    </button>
+                </div>
                 {% endif %}
-            </tbody>
-        </table>
+            </form>
+        </div>
+
+        <!-- Jobs Management -->
+        <div class="card">
+            <div class="section-title">
+                <div class="badge-icon badge-primary">💼</div>
+                <div>Manage Job Postings</div>
+            </div>
+
+            <!-- Add Job Form -->
+            <form action="{{ url_for('add_job') }}" method="post" class="job-form">
+                <h3 style="margin-top: 0; margin-bottom: 1.5rem; color: #f8fafc;">Create New Job Position</h3>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Job Title</label>
+                        <input type="text" name="title" placeholder="e.g., Senior Python Developer" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <input type="text" name="description" placeholder="Brief job description" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>Required Skills</label>
+                        <input type="text" name="skills_required" placeholder="e.g., Python, SQL, React, Docker" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Minimum Quiz Score</label>
+                        <input type="number" name="min_quiz_score" value="10" min="0" max="100" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Minimum Resume Score</label>
+                        <input type="number" name="min_resume_score" value="75" min="0" max="100" required>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">+ Add Job Position</button>
+                </div>
+            </form>
+
+            <!-- Jobs Table -->
+            <h3 style="margin-top: 2rem; margin-bottom: 1.5rem; color: #f8fafc;">Current Job Postings</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Job ID</th>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>Required Skills</th>
+                            <th>Min Scores</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if jobs %}
+                            {% for job in jobs %}
+                            <tr>
+                                <td>#{{ job[0] }}</td>
+                                <td><strong style="color: #a5b4fc;">{{ job[1] }}</strong></td>
+                                <td style="max-width: 300px;">{{ job[2] }}</td>
+                                <td>
+                                    {% for skill in job[3].split(',') %}
+                                    <span class="score-badge" style="background: rgba(99, 102, 241, 0.2); color: #a5b4fc;">
+                                        {{ skill.strip() }}
+                                    </span>
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    <div style="font-size: 0.9rem; line-height: 1.6;">
+                                        Quiz: <span style="color: #818cf8; font-weight: 600;">{{ job[4] }}/100</span><br>
+                                        Resume: <span style="color: #34d399; font-weight: 600;">{{ job[5] }}/100</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                        <tr>
+                            <td colspan="5">
+                                <div class="empty-state">
+                                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">💼</div>
+                                    <p>No jobs posted yet. Create one using the form above.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </body>
 
