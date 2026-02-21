@@ -122,11 +122,12 @@ def register():
     error = None
     if request.method == 'POST':
         u = request.form['username']
+        e = request.form.get('email', 'candidate@example.com')
         p = request.form['password']
         
         conn = get_db_connection()
         try:
-            conn.execute("INSERT INTO users (username, password, is_admin) VALUES (?, ?, 0)", (u, p))
+            conn.execute("INSERT INTO users (username, password, is_admin, email) VALUES (?, ?, 0, ?)", (u, p, e))
             conn.commit()
             conn.close()
             return redirect(url_for('login'))
@@ -146,8 +147,14 @@ def apply():
     if 'user_id' not in session or session.get('is_admin') == 1:
         return redirect(url_for('index'))
         
+    conn = get_db_connection()
+    user_data = conn.execute("SELECT email FROM users WHERE id=?", (session['user_id'],)).fetchone()
+    conn.close()
+    user_email = user_data[0] if user_data and user_data[0] else 'candidate@example.com'
+        
     if request.method == 'POST':
         name = request.form['name']
+        email = request.form.get('email', user_email)
         exp = int(request.form['exp'])
         resume = request.files['resume']
         
@@ -171,6 +178,7 @@ def apply():
                     max_match = score
         
         session['candidate_name'] = name
+        session['candidate_email'] = email
         session['candidate_exp'] = exp
         session['candidate_skills_count'] = skills_count
         session['candidate_skills_str'] = skills_str
@@ -218,11 +226,12 @@ def quiz():
                 print("Model prediction error:", e)
         
         conn = get_db_connection()
+        email_val = session.get('candidate_email', 'candidate@example.com')
         try:
-            conn.execute("INSERT INTO candidates (user_id, name, experience, skills, quiz, selected, resume_score, summary, skills_list, resume_match) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                         (session['user_id'], session['candidate_name'], exp, skills_count, score, result, session.get('resume_score', 0), session.get('resume_summary', ''), skills_str, resume_match))
+            conn.execute("INSERT INTO candidates (user_id, name, experience, skills, quiz, selected, resume_score, summary, skills_list, resume_match, email) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                         (session['user_id'], session['candidate_name'], exp, skills_count, score, result, session.get('resume_score', 0), session.get('resume_summary', ''), skills_str, resume_match, email_val))
         except sqlite3.OperationalError:
-            # Fallback if skills_list column doesn't exist
+            # Fallback if some columns don't exist
             conn.execute("INSERT INTO candidates (user_id, name, experience, skills, quiz, selected, resume_score, summary) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                          (session['user_id'], session['candidate_name'], exp, skills_count, score, result, session.get('resume_score', 0), session.get('resume_summary', '')))
 
@@ -292,7 +301,82 @@ def add_job():
                  (title, desc, skills, min_quiz, min_resume))
     conn.commit()
     conn.close()
-    return redirect(url_for('dashboard'))
+    return redirect(url_for('admin_jobs'))
+
+@app.route('/api/chat', methods=['POST'])
+def api_chat():
+    if 'user_id' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+        
+    user_msg = request.json.get('message', '')
+    if not user_msg:
+        return jsonify({'error': 'Message is empty'}), 400
+        
+    conn = get_db_connection()
+    c = conn.cursor()
+    candidate = c.execute("SELECT * FROM candidates WHERE user_id=? ORDER BY id DESC LIMIT 1", (session['user_id'],)).fetchone()
+    jobs = c.execute("SELECT * FROM jobs").fetchall()
+    conn.close()
+    
+    context = "No candidate profile found. Only generic advice can be given."
+    if candidate:
+        skills = candidate[9] or "None"
+        resume_summary = candidate[8] or "None"
+        exp = candidate[3]
+        quiz = candidate[5]
+        r_score = candidate[7]
+        context = f"Candidate Profile Context - Experience: {exp} years. Extracted Skills: {skills}. Quiz Score: {quiz}/100. Resume Score: {r_score}/100. Summary of resume: {resume_summary}. "
+        
+        all_required_skills = set()
+        for job in jobs:
+            for s in job[3].split(","):
+                all_required_skills.add(s.strip().lower())
+                
+        cand_skills_lower = skills.lower()
+        missing = [s for s in all_required_skills if s not in cand_skills_lower]
+        context += f"Often required job skills missing from candidate profile: {', '.join(missing)}. "
+        
+    prompt = f"System: You are an internal chatbot assistant embedded within the SkillPalavar application on the Candidate Dashboard. You have access to the user's specific context: {context}\n"
+    prompt += "Use this specific context to answer the candidate's technical career questions. Provide very concise, concrete advice. Do not output anything other than the direct answer.\n"
+    prompt += f"User Message: {user_msg}\nAssistant:"
+    
+    try:
+        r = requests.post('http://localhost:11434/api/generate', json={
+            "model": "gemma3:4b",
+            "prompt": prompt,
+            "stream": False
+        }, timeout=30)
+        json_data = r.json()
+        if 'response' in json_data:
+            return jsonify({'response': json_data['response'].strip()})
+        return jsonify({'error': 'Unexpected response from AI'}), 500
+    except Exception as e:
+        print("Chatbot Error:", e)
+        return jsonify({'error': 'Unable to connect to AI engine.'}), 500
+
+@app.route('/admin/candidate/<int:candidate_id>/decision', methods=['POST'])
+def candidate_decision(candidate_id):
+    if 'user_id' not in session or session.get('is_admin') == 0:
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    data = request.json
+    action = data.get('action')
+    if action not in ['approve', 'reject']:
+        return jsonify({'error': 'Invalid action'}), 400
+        
+    conn = get_db_connection()
+    c = conn.cursor()
+    candidate = c.execute("SELECT id, name, quiz, resume_score, email FROM candidates WHERE id=?", (candidate_id,)).fetchone()
+    if not candidate:
+        conn.close()
+        return jsonify({'error': 'Candidate not found'}), 404
+        
+    new_status = 1 if action == 'approve' else 2 # 2 representing rejected
+    c.execute("UPDATE candidates SET selected=? WHERE id=?", (new_status, candidate_id))
+    conn.commit()
+    conn.close()
+    
+    return jsonify({'success': True, 'message': f'Candidate {action}d successfully.'})
 
 @app.route('/dashboard')
 def dashboard():
@@ -305,24 +389,33 @@ def dashboard():
     jobs = c.execute("SELECT * FROM jobs ORDER BY id DESC").fetchall()
     conn.close()
     
-    # Generate individual job ranking graphs
+    return render_template('dashboard.html', data=data, jobs=jobs)
+
+@app.route('/admin/analytics')
+def admin_analytics():
+    if 'user_id' not in session or session.get('is_admin') == 0:
+        return redirect(url_for('index'))
+        
+    conn = get_db_connection()
+    c = conn.cursor()
+    data = c.execute("SELECT * FROM candidates ORDER BY id DESC").fetchall()
+    jobs = c.execute("SELECT * FROM jobs ORDER BY id DESC").fetchall()
+    conn.close()
+    
     job_graphs = []
     
     for job in jobs:
         job_id = job[0]
         graph_filename = f'ranking_job_{job_id}.png'
         graph_path = os.path.join(app.root_path, 'static', graph_filename)
-        # Attempt to create dynamic specific graph, if it works, append to list
         if generate_ranking_graph(DB_PATH, graph_path, job_id=job_id):
             job_graphs.append({'id': job_id, 'title': job[1], 'filename': graph_filename})
             
-    # As a fallback, render the generic one as well just in case they want a macro perspective
     global_graph_path = os.path.join(app.root_path, 'static', 'ranking.png')
     global_graph_exists = generate_ranking_graph(DB_PATH, global_graph_path)
     if global_graph_exists:
         job_graphs.insert(0, {'id': 'global', 'title': 'Overall Macro Leaderboard', 'filename': 'ranking.png'})
     
-    # Prepare chart data
     selected_count = sum(1 for row in data if row[6] == 1)
     pending_count = sum(1 for row in data if row[6] == 0)
     scores = [(row[5] or 0, row[7] or 0) for row in data]
@@ -336,7 +429,18 @@ def dashboard():
         'avg_resume': avg_resume
     }
     
-    return render_template('dashboard.html', data=data, jobs=jobs, job_graphs=job_graphs, chart_data=chart_data)
+    return render_template('admin_analytics.html', chart_data=chart_data, job_graphs=job_graphs)
+
+@app.route('/admin/jobs')
+def admin_jobs():
+    if 'user_id' not in session or session.get('is_admin') == 0:
+        return redirect(url_for('index'))
+        
+    conn = get_db_connection()
+    c = conn.cursor()
+    jobs = c.execute("SELECT * FROM jobs ORDER BY id DESC").fetchall()
+    conn.close()
+    return render_template('admin_jobs.html', jobs=jobs)
 
 @app.route('/admin/export_csv')
 def export_csv():

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Analytics - SkillPalavar</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            min-height: 100vh;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            padding: 1.5rem;
+        }
+
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .admin-header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+
+        .btn-secondary {
+            border: 1px solid var(--card-border);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            color: var(--text-main);
+        }
+
+        .btn-secondary:hover {
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .card {
+            border: 1px solid var(--card-border);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2.5rem;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .badge-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 1.2rem;
+        }
+
+        .badge-primary {
+            background: #ccfbf1;
+            color: var(--primary-color);
+        }
+
+        .graphs-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .graph-card {
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .graph-title {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-weight: 600;
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .graph-image {
+            max-width: 100%;
+            border-radius: 8px;
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <div>
+                <h1>Visual Analytics</h1>
+            </div>
+            <a href="/dashboard" class="btn-secondary">← Back to Dashboard</a>
+        </div>
+
+        {% if chart_data %}
+        <div class="card">
+            <div class="section-title">
+                <div class="badge-icon badge-primary">📈</div>
+                <div>Candidate Metrics</div>
+            </div>
+            <div class="graphs-container" style="grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));">
+                <div class="graph-card">
+                    <div class="graph-title">Candidate Status Distribution</div>
+                    <canvas id="statusChart"></canvas>
+                </div>
+                <div class="graph-card">
+                    <div class="graph-title">Average Candidate Scores</div>
+                    <canvas id="scoresChart"></canvas>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if job_graphs %}
+        <div class="card">
+            <div class="section-title">
+                <div class="badge-icon badge-primary">📊</div>
+                <div>Candidate Rankings</div>
+            </div>
+            <div class="graphs-container">
+                {% for graph in job_graphs %}
+                <div class="graph-card">
+                    <div class="graph-title">{{ graph.title }}</div>
+                    <img src="{{ url_for('static', filename=graph.filename) }}?v={{ range(1, 10000) | random }}"
+                        alt="Candidate Rankings Graph" class="graph-image">
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if chart_data %}
+    <script>
+        const statusCtx = document.getElementById('statusChart').getContext('2d');
+        const scoresCtx = document.getElementById('scoresChart').getContext('2d');
+        new Chart(statusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: {{ chart_data.status_labels | tojson }},
+            datasets: [{
+                data: {{ chart_data.status_counts | tojson }},
+            backgroundColor: ['#10b981', '#f59e0b'],
+            borderWidth: 0
+                }]
+            },
+            options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+        });
+        new Chart(scoresCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Average Quiz Score', 'Average Resume Score'],
+                datasets: [{
+                    label: 'Scores (out of 100)',
+                    data: [{{ chart_data.avg_quiz }}, {{ chart_data.avg_resume }}],
+            backgroundColor: ['#6366f1', '#34d399'],
+            borderRadius: 6
+        }]
+            },
+            options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100 } } }
+        });
+    </script>
+    {% endif %}
+</body>
+
+</html>

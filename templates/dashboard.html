@@ -451,44 +451,29 @@
             </div>
         </div>
 
-        <!-- Analytics Charts Section -->
-        {% if chart_data %}
-        <div class="card">
-            <div class="section-title">
-                <div class="badge-icon badge-primary">📈</div>
-                <div>Visual Analytics</div>
-            </div>
-            <div class="graphs-container" style="grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));">
-                <div class="graph-card">
-                    <div class="graph-title">Candidate Status Distribution</div>
-                    <canvas id="statusChart"></canvas>
+        <!-- Quick Actions Grid -->
+        <div
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
+            <a href="/admin/analytics" style="text-decoration: none; color: inherit; display: block;">
+                <div class="card"
+                    style="margin-bottom: 0; cursor: pointer; transition: transform 0.2s; border: 1px solid rgba(99, 102, 241, 0.4); background: rgba(99, 102, 241, 0.05);">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">📈</div>
+                    <h2 style="margin: 0 0 0.5rem 0; font-size: 1.5rem;">Visual Analytics</h2>
+                    <p style="color: var(--text-muted); margin: 0;">View deep insights, ranking graphs, and candidate
+                        distributions.</p>
                 </div>
-                <div class="graph-card">
-                    <div class="graph-title">Average Candidate Scores</div>
-                    <canvas id="scoresChart"></canvas>
-                </div>
-            </div>
-        </div>
-        {% endif %}
+            </a>
 
-        <!-- Rankings Graphs -->
-        {% if job_graphs %}
-        <div class="card">
-            <div class="section-title">
-                <div class="badge-icon badge-primary">📊</div>
-                <div>Candidate Rankings</div>
-            </div>
-            <div class="graphs-container">
-                {% for graph in job_graphs %}
-                <div class="graph-card">
-                    <div class="graph-title">{{ graph.title }}</div>
-                    <img src="{{ url_for('static', filename=graph.filename) }}?v={{ range(1, 10000) | random }}"
-                        alt="Candidate Rankings Graph" class="graph-image">
+            <a href="/admin/jobs" style="text-decoration: none; color: inherit; display: block;">
+                <div class="card"
+                    style="margin-bottom: 0; cursor: pointer; transition: transform 0.2s; border: 1px solid rgba(16, 185, 129, 0.4); background: rgba(16, 185, 129, 0.05);">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">💼</div>
+                    <h2 style="margin: 0 0 0.5rem 0; font-size: 1.5rem;">Manage Jobs</h2>
+                    <p style="color: var(--text-muted); margin: 0;">Create new positions, edit existing jobs, and manage
+                        posting requirements.</p>
                 </div>
-                {% endfor %}
-            </div>
+            </a>
         </div>
-        {% endif %}
 
         <!-- Candidates Table -->
         <div class="card">
@@ -508,7 +493,8 @@
                                 <th>Experience</th>
                                 <th>Skills</th>
                                 <th>Scores</th>
-                                <th>Status</th>
+                                <th>AI Suggestion</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -541,11 +527,36 @@
                                             candidate[5] }}/100</span></div>
                                 </td>
                                 <td>
+                                    <!-- AI Suggestion Column -->
                                     {% if candidate[6] == 1 %}
-                                    <span class="badge selected">✓ Selected</span>
+                                    <span class="badge selected"
+                                        style="color:#10b981; border:1px solid rgba(16,185,129,0.3); background: rgba(16,185,129,0.1);">✓
+                                        Approved</span>
+                                    {% elif candidate[6] == 2 %}
+                                    <span class="badge rejected"
+                                        style="color:#ef4444; border:1px solid rgba(239,68,68,0.3); background: rgba(239,68,68,0.1);">⊘
+                                        Rejected</span>
                                     {% else %}
-                                    <span class="badge rejected">⊘ Pending</span>
+                                    <span class="badge"
+                                        style="background: rgba(255,255,255,0.1); color: var(--text-muted); border: 1px solid rgba(255,255,255,0.2);">⊘
+                                        Under Review</span>
                                     {% endif %}
+                                </td>
+                                <td style="width: 150px;">
+                                    <div style="display: flex; gap: 0.5rem;" id="decision-btns-{{candidate[0]}}">
+                                        <button type="button" onclick="handleDecision({{ candidate[0] }}, 'approve')"
+                                            class="btn-primary"
+                                            style="padding: 0.4rem 0.6rem; font-size: 0.8rem; background: #10b981; border: none; flex: 1; color: white; cursor: pointer;">Approve</button>
+                                        <button type="button" onclick="handleDecision({{ candidate[0] }}, 'reject')"
+                                            class="btn-secondary"
+                                            style="padding: 0.4rem 0.6rem; font-size: 0.8rem; border: 1px solid #ef4444; color: #ef4444; background: transparent; flex: 1; cursor: pointer;">Reject</button>
+                                    </div>
+                                    <div id="decision-loading-{{candidate[0]}}"
+                                        style="display: none; font-size: 0.8rem; color: var(--text-muted); text-align: center;">
+                                        <span class="spinner"
+                                            style="width: 14px; height: 14px; border-width: 2px; border-top-color: #6366f1; border-color: rgba(99,102,241,0.2) rgba(99,102,241,0.2) rgba(99,102,241,0.2) #6366f1; border-radius: 50%; display: inline-block; animation: spin 1s linear infinite; margin-right: 5px; vertical-align: middle;"></span>
+                                        Saving...
+                                    </div>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -572,151 +583,35 @@
                 {% endif %}
             </form>
         </div>
-
-        <!-- Jobs Management -->
-        <div class="card">
-            <div class="section-title">
-                <div class="badge-icon badge-primary">💼</div>
-                <div>Manage Job Postings</div>
-            </div>
-
-            <!-- Add Job Form -->
-            <form action="{{ url_for('add_job') }}" method="post" class="job-form">
-                <h3 style="margin-top: 0; margin-bottom: 1.5rem; ">Create New Job Position</h3>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Job Title</label>
-                        <input type="text" name="title" placeholder="e.g., Senior Python Developer" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Description</label>
-                        <input type="text" name="description" placeholder="Brief job description" required>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group" style="grid-column: span 2;">
-                        <label>Required Skills</label>
-                        <input type="text" name="skills_required" placeholder="e.g., Python, SQL, React, Docker"
-                            required>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Minimum Quiz Score</label>
-                        <input type="number" name="min_quiz_score" value="10" min="0" max="100" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Minimum Resume Score</label>
-                        <input type="number" name="min_resume_score" value="75" min="0" max="100" required>
-                    </div>
-                </div>
-
-                <div class="form-actions">
-                    <button type="submit" class="btn-primary">+ Add Job Position</button>
-                </div>
-            </form>
-
-            <!-- Jobs Table -->
-            <h3 style="margin-top: 2rem; margin-bottom: 1.5rem; ">Current Job Postings</h3>
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Job ID</th>
-                            <th>Title</th>
-                            <th>Description</th>
-                            <th>Required Skills</th>
-                            <th>Min Scores</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% if jobs %}
-                        {% for job in jobs %}
-                        <tr>
-                            <td>#{{ job[0] }}</td>
-                            <td><strong style="color: var(--primary-color);">{{ job[1] }}</strong></td>
-                            <td style="max-width: 300px;">{{ job[2] }}</td>
-                            <td>
-                                {% for skill in job[3].split(',') %}
-                                <span class="score-badge" style="background: #ccfbf1; color: var(--primary-color);">
-                                    {{ skill.strip() }}
-                                </span>
-                                {% endfor %}
-                            </td>
-                            <td>
-                                <div style="font-size: 0.9rem; line-height: 1.6;">
-                                    Quiz: <span style="color: var(--primary-color); font-weight: 600;">{{ job[4]
-                                        }}/100</span><br>
-                                    Resume: <span style="color: #34d399; font-weight: 600;">{{ job[5] }}/100</span>
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                        {% else %}
-                        <tr>
-                            <td colspan="5">
-                                <div class="empty-state">
-                                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">💼</div>
-                                    <p>No jobs posted yet. Create one using the form above.</p>
-                                </div>
-                            </td>
-                        </tr>
-                        {% endif %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
     </div>
-
-    {% if chart_data %}
     <script>
-        const statusCtx = document.getElementById('statusChart').getContext('2d');
-        const scoresCtx = document.getElementById('scoresChart').getContext('2d');
+        function handleDecision(candidateId, action) {
+            document.getElementById('decision-btns-' + candidateId).style.display = 'none';
+            document.getElementById('decision-loading-' + candidateId).style.display = 'block';
 
-        new Chart(statusCtx, {
-            type: 'doughnut',
-            data: {
-                labels: {{ chart_data.status_labels | tojson }},
-            datasets: [{
-                data: {{ chart_data.status_counts | tojson }},
-            backgroundColor: ['#10b981', '#f59e0b'],
-            borderWidth: 0
-                }]
-            },
-            options: {
-            responsive: true,
-            plugins: {
-                legend: { position: 'bottom' }
-            }
+            fetch(`/admin/candidate/${candidateId}/decision`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ action: action })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Success: ' + data.message);
+                        window.location.reload();
+                    } else {
+                        alert('Error: ' + data.error);
+                        window.location.reload();
+                    }
+                })
+                .catch(err => {
+                    alert('An error occurred.');
+                    window.location.reload();
+                });
         }
-        });
-
-        new Chart(scoresCtx, {
-            type: 'bar',
-            data: {
-                labels: ['Average Quiz Score', 'Average Resume Score'],
-                datasets: [{
-                    label: 'Scores (out of 100)',
-                    data: [{{ chart_data.avg_quiz }}, {{ chart_data.avg_resume }}],
-            backgroundColor: ['#6366f1', '#34d399'],
-            borderRadius: 6
-        }]
-            },
-            options: {
-            responsive: true,
-            plugins: {
-                legend: { display: false }
-            },
-            scales: {
-                y: { beginAtZero: true, max: 100 }
-            }
-        }
-        });
     </script>
-    {% endif %}
 </body>
 
 </html>
