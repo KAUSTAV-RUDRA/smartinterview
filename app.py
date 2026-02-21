@@ -249,16 +249,30 @@ def user_dashboard():
     conn.close()
     
     matched_jobs = []
+    candidate_missing_skills = []
+    
     if candidate:
         quiz_score = candidate[5]
         resume_score = candidate[7] or 0
         candidate_skills = candidate[9] or ""
+        
+        # Calculate all missing skills from jobs
+        all_required_skills = set()
+        for job in jobs:
+            job_skills = [s.strip().lower() for s in job[3].split(",")]
+            all_required_skills.update(job_skills)
+        
+        # Find missing skills
+        cand_skills_lower = candidate_skills.lower() if candidate_skills else ""
+        candidate_missing_skills = [s for s in all_required_skills if s not in cand_skills_lower]
+        
         for job in jobs:
             if quiz_score >= job[4] and resume_score >= job[5]:
                 missing = skill_gap(candidate_skills, job[3])
                 matched_jobs.append(job + (missing,))
                 
-    return render_template('user_dashboard.html', candidate=candidate, matched_jobs=matched_jobs)
+    return render_template('user_dashboard.html', candidate=candidate, matched_jobs=matched_jobs, 
+                         missing_skills=candidate_missing_skills)
 
 @app.route('/admin/job/add', methods=['POST'])
 def add_job():

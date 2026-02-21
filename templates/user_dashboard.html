@@ -4,132 +4,538 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Candidate Dashboard</title>
+    <title>My Dashboard - SkillPalavar</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <style>
+        body {
+            min-height: 100vh;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            padding: 1rem;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #818cf8, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.75rem;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 0.5rem 0;
+        }
+
+        .stat-resume {
+            color: #34d399;
+            text-shadow: 0 0 10px rgba(52, 211, 153, 0.4);
+        }
+
+        .stat-quiz {
+            color: #818cf8;
+            text-shadow: 0 0 10px rgba(129, 140, 248, 0.4);
+        }
+
+        .stat-unit {
+            font-size: 1rem;
+            color: var(--text-muted);
+        }
+
         .card {
             background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
             border: 1px solid var(--card-border);
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 2rem;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2.5rem;
+        }
+
+        .card h2 {
+            margin: 0 0 1.5rem 0;
+            font-size: 1.75rem;
+            color: #f8fafc;
+        }
+
+        .card h3 {
+            color: var(--text-main);
+            margin-top: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 0.75rem 0 1rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #34d399, #10b981);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .skills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin: 1rem 0;
+        }
+
+        .skill-tag {
+            background: rgba(99, 102, 241, 0.2);
+            border: 1px solid rgba(99, 102, 241, 0.4);
+            color: #a5b4fc;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .skill-tag:hover {
+            background: rgba(99, 102, 241, 0.3);
+            border-color: rgba(99, 102, 241, 0.6);
+        }
+
+        .skill-missing {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #fca5a5;
+        }
+
+        .skill-missing:hover {
+            background: rgba(239, 68, 68, 0.25);
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .badge-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 1.2rem;
+        }
+
+        .badge-warning {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.2);
+            color: #6ee7b7;
+        }
+
+        .badge-info {
+            background: rgba(129, 140, 248, 0.2);
+            color: #a5b4fc;
         }
 
         .job-card {
-            background: rgba(99, 102, 241, 0.05);
+            background: rgba(99, 102, 241, 0.08);
             border: 1px solid rgba(99, 102, 241, 0.2);
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
+            padding: 1.75rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .job-card:hover {
+            background: rgba(99, 102, 241, 0.12);
+            border-color: rgba(99, 102, 241, 0.3);
+            transform: translateX(5px);
         }
 
         .job-title {
-            color: #818cf8;
-            margin-top: 0;
-            margin-bottom: 0.5rem;
+            color: #a5b4fc;
+            margin: 0 0 0.75rem 0;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .job-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .meta-label {
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .meta-value {
+            color: #cbd5e1;
+        }
+
+        .missing-skills-alert {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1.5px solid rgba(239, 68, 68, 0.3);
+            border-left: 4px solid #ef4444;
+            padding: 1.25rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .missing-skills-alert h4 {
+            color: #ef4444;
+            margin: 0 0 0.75rem 0;
+            font-size: 0.95rem;
+        }
+
+        .all-skills-alert {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1.5px solid rgba(16, 185, 129, 0.3);
+            border-left: 4px solid #10b981;
+            padding: 1.25rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .all-skills-alert h4 {
+            color: #10b981;
+            margin: 0 0 0.75rem 0;
+            font-size: 0.95rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+        }
+
+        .empty-state p {
+            color: var(--text-muted);
+            margin: 0 0 1.5rem 0;
+        }
+
+        .feedback-section {
+            background: rgba(250, 204, 21, 0.05);
+            border-left: 4px solid #facc15;
+            padding: 1.25rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        .feedback-title {
+            color: #fcd34d;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .header-actions {
+                width: 100%;
+            }
+
+            .btn-primary, .btn-secondary {
+                flex: 1;
+                justify-content: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .job-meta {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="container" style="max-width: 800px; padding: 2rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-            <h1 style="margin: 0;">My Dashboard</h1>
-            <div style="display: flex; gap: 1rem;">
-                <a href="/apply" class="btn"
-                    style="padding: 0.5rem 1rem; text-decoration: none; border-radius: 6px;">Submit New Application</a>
-                <a href="/logout" class="badge"
-                    style="text-decoration: none; background: rgba(255,255,255,0.1); padding: 0.5rem 1rem;">Log Out</a>
+    <div class="dashboard-container">
+        <div class="header">
+            <h1>📊 My Dashboard</h1>
+            <div class="header-actions">
+                <a href="/apply" class="btn-primary">+ New Application</a>
+                <a href="/logout" class="btn-secondary">Log Out</a>
             </div>
         </div>
 
         {% if candidate %}
-        <div class="card">
-            <h2>Application Summary</h2>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1rem;">
-                <div
-                    style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 1.5rem; border: 1px solid rgba(52, 211, 153, 0.2); box-shadow: 0 0 15px rgba(52, 211, 153, 0.05); text-align: center;">
-                    <h3
-                        style="color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">
-                        Resume Score</h3>
-                    <p
-                        style="font-size: 2.5rem; font-weight: 800; margin: 0; color: #34d399; text-shadow: 0 0 10px rgba(52, 211, 153, 0.4);">
-                        {{ candidate[7] or 0 }}<span style="font-size: 1rem; color: var(--text-muted);">/100</span></p>
+        <!-- Stats Section -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Resume Score</div>
+                <div class="stat-value stat-resume">{{ candidate[7] or 0 }}<span class="stat-unit">/100</span></div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ (candidate[7] or 0) * 100 / 100 }}%; background: linear-gradient(90deg, #34d399, #10b981);"></div>
                 </div>
-                <div
-                    style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 1.5rem; border: 1px solid rgba(129, 140, 248, 0.2); box-shadow: var(--accent-glow); text-align: center;">
-                    <h3
-                        style="color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">
-                        MCQ Quiz Score</h3>
-                    <p
-                        style="font-size: 2.5rem; font-weight: 800; margin: 0; color: #818cf8; text-shadow: 0 0 10px rgba(129, 140, 248, 0.4);">
-                        {{ candidate[5] }}<span style="font-size: 1rem; color: var(--text-muted);">/100</span></p>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">AI Evaluated</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Quiz Score</div>
+                <div class="stat-value stat-quiz">{{ candidate[5] }}<span class="stat-unit">/100</span></div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ candidate[5] }}%; background: linear-gradient(90deg, #818cf8, #6366f1);"></div>
                 </div>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">Skills Assessment</div>
             </div>
-
-            {% if candidate|length > 9 and candidate[9] %}
-            <div
-                style="margin-top: 1.5rem; padding: 1rem; background: rgba(255,255,255,0.02); border-left: 3px solid #facc15; border-radius: 4px;">
-                <h3 style="color: #facc15; margin-bottom: 0.5rem; font-size: 0.95rem;">Extracted Skills</h3>
-                <p style="line-height: 1.4; color: #e2e8f0; font-size: 0.9rem;">{{ candidate[9] }}</p>
-            </div>
-            {% endif %}
-
-            <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(255,255,255,0.02); border-radius: 8px;">
-                <h3 style="color: var(--text-muted); margin-bottom: 0.5rem;">AI Resume Feedback</h3>
-                <p style="line-height: 1.6; font-size: 0.95rem;">{{ candidate[8] }}</p>
+            <div class="stat-card">
+                <div class="stat-label">Experience</div>
+                <div class="stat-value" style="color: #fbbf24;">{{ candidate[3] }}<span class="stat-unit">yrs</span></div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ min(candidate[3] * 10, 100) }}%; background: linear-gradient(90deg, #fbbf24, #f59e0b);"></div>
+                </div>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">Professional</div>
             </div>
         </div>
 
+        <!-- Candidate Summary Card -->
         <div class="card">
-            <h2>Recommended Jobs for You</h2>
-            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Based on your resume evaluation and quiz scores,
-                you meet the requirements for the following roles:</p>
+            <div class="section-title">
+                <div class="badge-icon badge-info">👤</div>
+                <div>Application Summary</div>
+            </div>
 
-            {% if matched_jobs %}
-            <div style="display: flex; flex-direction: column; gap: 1rem;">
-                {% for job in matched_jobs %}
-                <div class="job-card">
-                    <h3 class="job-title">{{ job[1] }}</h3>
-                    <p style="margin-bottom: 0.5rem;"><strong>Description:</strong> {{ job[2] }}</p>
-                    <p style="margin-bottom: 0.5rem;"><strong>Relevant Skills:</strong> <span style="color: #cbd5e1;">{{
-                            job[3] }}</span></p>
+            <h3>Your Current Skills</h3>
+            <div class="skills-container">
+                {% if candidate[9] %}
+                    {% for skill in candidate[9].split(',') %}
+                    <span class="skill-tag">{{ skill.strip() }}</span>
+                    {% endfor %}
+                {% else %}
+                <span style="color: var(--text-muted);">No skills listed</span>
+                {% endif %}
+            </div>
 
-                    {% if job|length > 6 and job[6] %}
-                    <div
-                        style="margin-top: 0.75rem; padding: 0.75rem; background: rgba(239, 68, 68, 0.1); border-left: 4px solid #ef4444; border-radius: 6px;">
-                        <strong style="color: #ef4444; font-size: 0.95rem;">Action Needed - Skill Gap:</strong>
-                        <div style="color: #fca5a5; font-size: 0.9rem; margin-top: 0.25rem;">Missing: {{ job[6] |
-                            join(', ') | title }}</div>
-                    </div>
-                    {% elif job|length > 6 %}
-                    <div
-                        style="margin-top: 0.75rem; padding: 0.75rem; background: rgba(16, 185, 129, 0.1); border-left: 4px solid #10b981; border-radius: 6px;">
-                        <strong style="color: #10b981; font-size: 0.95rem;">Skill Gap Analysis:</strong>
-                        <div style="color: #6ee7b7; font-size: 0.9rem; margin-top: 0.25rem;">You have all the required
-                            skills for this role!</div>
-                    </div>
-                    {% endif %}
+            {% if candidate[8] %}
+            <div class="feedback-section">
+                <div class="feedback-title">✨ Resume Feedback</div>
+                <p style="margin: 0; color: #e2e8f0; line-height: 1.6;">{{ candidate[8] }}</p>
+            </div>
+            {% endif %}
+        </div>
 
-                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 1rem; margin-bottom: 0;">
-                        <em>Requirements: Min Quiz Score {{ job[4] }} &bull; Min Resume Score {{ job[5] }}</em>
-                    </p>
-                </div>
+        <!-- Missing Skills Card -->
+        {% if missing_skills %}
+        <div class="card">
+            <div class="section-title">
+                <div class="badge-icon badge-warning">⚠️</div>
+                <div>Skills to Master</div>
+            </div>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">These skills are required by available job positions. Learning them will expand your opportunities!</p>
+
+            <div class="skills-container">
+                {% for skill in missing_skills %}
+                <span class="skill-tag skill-missing">{{ skill | title }}</span>
                 {% endfor %}
             </div>
+
+            <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(59, 130, 246, 0.1); border-left: 3px solid #3b82f6; border-radius: 6px;">
+                <p style="margin: 0; color: #93c5fd; font-size: 0.9rem;">
+                    💡 <strong>Pro Tip:</strong> Acquiring these skills will significantly improve your match rate with available positions. Consider online courses like Udemy, Coursera, or your preferred learning platform!
+                </p>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Recommended Jobs Card -->
+        <div class="card">
+            <div class="section-title">
+                <div class="badge-icon badge-success">🎯</div>
+                <div>Recommended Positions</div>
+            </div>
+
+            {% if matched_jobs %}
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Based on your scores, you qualify for {{ matched_jobs | length }} available position{{ 's' if matched_jobs | length != 1 else '' }}:</p>
+
+            {% for job in matched_jobs %}
+            <div class="job-card">
+                <h3 class="job-title">{{ job[1] }}</h3>
+
+                <div class="job-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">📝 Description:</span>
+                        <span class="meta-value">{{ job[2] }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">✅ Min Quiz Score:</span>
+                        <span class="meta-value">{{ job[4] }}/100</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">📄 Min Resume Score:</span>
+                        <span class="meta-value">{{ job[5] }}/100</span>
+                    </div>
+                </div>
+
+                <div style="margin: 1rem 0;">
+                    <h4 style="color: #cbd5e1; margin-bottom: 0.75rem; font-size: 0.95rem;">Required Skills:</h4>
+                    <div class="skills-container">
+                        {% for skill in job[3].split(',') %}
+                        <span class="skill-tag">{{ skill.strip() }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                {% if job|length > 6 and job[6] %}
+                <div class="missing-skills-alert">
+                    <h4>📚 Skills to Acquire for This Role:</h4>
+                    <div class="skills-container" style="margin: 0.75rem 0 0 0;">
+                        {% for skill in job[6] %}
+                        <span class="skill-tag skill-missing">{{ skill | title }}</span>
+                        {% endfor %}
+                    </div>
+                    <p style="font-size: 0.85rem; margin-top: 0.75rem; color: #fca5a5;">Learn these {{ job[6] | length }} skill{{ 's' if job[6] | length != 1 else '' }} to be fully qualified for {{ job[1] }}</p>
+                </div>
+                {% else %}
+                <div class="all-skills-alert">
+                    <h4>✨ Great News!</h4>
+                    <p style="margin: 0; font-size: 0.9rem; color: #6ee7b7;">You have all the required skills for this position. You're ready to apply!</p>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+
             {% else %}
-            <div style="text-align: center; padding: 2rem; background: rgba(255,255,255,0.02); border-radius: 8px;">
-                <p style="color: #94a3b8; margin: 0;">No matching jobs found at this time. Check back later or try
-                    applying again to improve your scores.</p>
+            <div class="empty-state">
+                <div style="font-size: 2rem; margin-bottom: 1rem;">🔍</div>
+                <p><strong>No Matching Positions Yet</strong></p>
+                <p>Improve your quiz score and resume evaluation to unlock more job opportunities. Start a new application to improve your scores!</p>
+                <a href="/apply" class="btn-primary" style="text-decoration: none; display: inline-block;">Start New Application</a>
             </div>
             {% endif %}
         </div>
+
         {% else %}
-        <div class="card" style="text-align: center; padding: 3rem;">
-            <h2 style="margin-bottom: 1rem;">Welcome to SkillPalavar</h2>
-            <p style="margin-bottom: 2rem; color: var(--text-muted);">Please submit your application to get your resume
-                evaluated, take a skill assessment, and find matching jobs.</p>
-            <a href="/apply" class="btn" style="text-decoration: none;">Start Application</a>
+        <!-- Welcome Card -->
+        <div class="card">
+            <div style="text-align: center; padding: 2rem;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🚀</div>
+                <h2 style="margin-bottom: 1rem; color: #f8fafc;">Welcome to SkillPalavar</h2>
+                <p style="margin-bottom: 1.5rem; color: var(--text-muted); font-size: 1.1rem;">
+                    Begin your journey to find the perfect role that matches your skills and aspirations.
+                </p>
+                <p style="margin-bottom: 2rem; color: var(--text-muted);">
+                    Submit your resume, take our skill assessment quiz, and we'll match you with perfect job opportunities based on your profile.
+                </p>
+                <a href="/apply" class="btn-primary" style="text-decoration: none; display: inline-block;">Start Your Application</a>
+            </div>
         </div>
         {% endif %}
     </div>
