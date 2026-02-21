@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidate Comparison</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .compare-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            justify-content: center;
+            margin-top: 2rem;
+            width: 100%;
+        }
+
+        .candidate-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .candidate-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .candidate-name {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #f8fafc;
+            margin-bottom: 0.5rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 1rem;
+        }
+
+        .compare-stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .stat-value {
+            color: #f8fafc;
+            font-weight: 600;
+        }
+
+        .score-highlight {
+            font-size: 1.2rem;
+            font-weight: 800;
+            padding: 0.2rem 0.8rem;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .resume-score {
+            color: #34d399;
+        }
+
+        .quiz-score {
+            color: #818cf8;
+        }
+
+        .skills-section {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            flex-grow: 1;
+        }
+
+        .skills-list {
+            font-size: 0.9rem;
+            color: #cbd5e1;
+            line-height: 1.5;
+            margin-top: 0.5rem;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .prediction-badge {
+            margin-top: 2rem;
+            text-align: center;
+            padding: 1rem;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .pred-selected {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+        }
+
+        .pred-rejected {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" style="max-width: 1400px; padding: 2rem 3rem;">
+        <div class="header-actions">
+            <div>
+                <h1 style="text-align: left; margin: 0;">Candidate Comparison</h1>
+                <p class="subtitle" style="text-align: left; margin: 0; padding-top: 5px;">Side-by-side technical
+                    evaluation</p>
+            </div>
+            <a href="/dashboard" class="btn btn-outline"
+                style="padding: 0.6rem 1.5rem; text-decoration: none; color: white; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px;">&larr;
+                Back to Dashboard</a>
+        </div>
+
+        <div class="compare-container">
+            {% for c in candidates %}
+            <div class="candidate-card">
+                <div class="candidate-name">{{ c[2] }}</div>
+
+                <div class="compare-stat">
+                    <span class="stat-label">Candidate ID</span>
+                    <span class="stat-value">#{{ c[0] }}</span>
+                </div>
+
+                <div class="compare-stat">
+                    <span class="stat-label">Experience</span>
+                    <span class="stat-value">{{ c[3] }} Years</span>
+                </div>
+
+                <div class="compare-stat">
+                    <span class="stat-label">Resume Score</span>
+                    <span class="stat-value score-highlight resume-score">{{ c[7] or 0 }}/100</span>
+                </div>
+
+                <div class="compare-stat">
+                    <span class="stat-label">Quiz Score</span>
+                    <span class="stat-value score-highlight quiz-score">{{ c[5] }}/100</span>
+                </div>
+
+                <div class="skills-section">
+                    <span class="stat-label">Detected Skills (Count: {{ c[4] }})</span>
+                    {% if c|length > 9 and c[9] %}
+                    <div class="skills-list">{{ c[9] }}</div>
+                    {% else %}
+                    <div class="skills-list" style="color: rgba(255,255,255,0.3); font-style: italic;">No specific
+                        skills extracted.</div>
+                    {% endif %}
+                </div>
+
+                {% if c[6] == 1 %}
+                <div class="prediction-badge pred-selected">AI Selected</div>
+                {% else %}
+                <div class="prediction-badge pred-rejected">AI Rejected</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            {% if not candidates %}
+            <div style="text-align: center; color: var(--text-muted); width: 100%; padding: 4rem;">
+                No candidates were selected for comparison.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+
+</html>

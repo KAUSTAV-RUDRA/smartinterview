@@ -4,32 +4,328 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Candidate AI Predictor</title>
+    <title>Candidate AI Predictor - Home</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .hero {
+            text-align: center;
+            padding: 4rem 1rem;
+            animation: fadeIn 1s ease-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+            background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient-shift 5s infinite linear;
+            background-size: 200% auto;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+            width: 100%;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 2.5rem 2rem;
+            border-radius: 16px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Add a subtle top border glow to feature cards */
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #818cf8, transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(99, 102, 241, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 10px 40px rgba(99, 102, 241, 0.15);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+            background: rgba(99, 102, 241, 0.1);
+            padding: 1rem;
+            border-radius: 12px;
+        }
+
+        .feature-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #f8fafc;
+            margin-bottom: 0.8rem;
+        }
+
+        .feature-desc {
+            font-size: 1rem;
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-size: 1.15rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.6);
+            color: white;
+            /* Ensure text color stays white */
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #f8fafc;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-outline:hover {
+            border-color: #818cf8;
+            background: rgba(129, 140, 248, 0.1);
+            transform: translateY(-3px);
+            color: #818cf8;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes gradient-shift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* Abstract Background Elements */
+        .bg-shape {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.5;
+        }
+
+        .shape-1 {
+            top: -100px;
+            left: -100px;
+            width: 500px;
+            height: 500px;
+            background: rgba(99, 102, 241, 0.3);
+            animation: float 10s infinite ease-in-out alternate;
+        }
+
+        .shape-2 {
+            bottom: -150px;
+            right: -100px;
+            width: 600px;
+            height: 600px;
+            background: rgba(192, 132, 252, 0.2);
+            animation: float 12s infinite ease-in-out alternate-reverse;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) scale(1);
+            }
+
+            100% {
+                transform: translateY(-50px) scale(1.1);
+            }
+        }
+
+        .container-xl {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            padding: 2rem;
+            width: 100%;
+        }
+
+        /* Nav Header outside login box style */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0 3rem 0;
+            opacity: 0;
+            animation: fadeIn 1s ease-out forwards;
+            animation-delay: 0.2s;
+            width: 100%;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: #818cf8;
+        }
+
+        body {
+            align-items: flex-start;
+            /* overrides center from style.css */
+            padding: 0;
+            overflow-x: hidden;
+            display: block;
+            /* Overrides display: flex from style.css to allow proper layout */
+        }
+
+        .pulse {
+            animation: pulse-animation 2s infinite;
+        }
+
+        @keyframes pulse-animation {
+            0% {
+                box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(99, 102, 241, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <div class="container">
-        <h1>Candidate Predictor</h1>
-        <p class="subtitle">Enter details to predict interview outcome</p>
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
 
-        <form action="/submit" method="POST" enctype="multipart/form-data">
-            <div class="form-group">
-                <input type="text" name="name" placeholder="Candidate Name" required>
+    <div class="container-xl">
+        <header class="header">
+            <a href="/" class="logo">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                </svg>
+                Candidate<span>AI</span>
+            </a>
+            <div>
+                <a href="/login" class="btn btn-outline" style="padding: 0.6rem 1.8rem; font-size: 1rem;">Log In</a>
             </div>
-            <div class="form-group">
-                <input type="number" step="0.1" name="exp" placeholder="Years of Experience" required>
+        </header>
+
+        <div class="hero">
+            <h1>Predict Hiring Success<br>with Artificial Intelligence</h1>
+            <p>Our advanced machine learning model analyzes resumes, technical quizzes, and background experience to
+                accurately predict candidate capability. Streamline your hiring process today.</p>
+
+            <div class="cta-buttons">
+                <a href="/register" class="btn btn-primary pulse">Get Started Now</a>
+                <a href="/login" class="btn btn-outline">Access Dashboard</a>
             </div>
-            <div class="form-group">
-                <input type="number" step="0.1" name="quiz" placeholder="Quiz Score (0-100)" required>
+
+            <div class="features">
+                <div class="feature-card">
+                    <div class="feature-icon">📄</div>
+                    <div class="feature-title">Smart Resume Parsing</div>
+                    <div class="feature-desc">Automatically extract technical skills, capabilities, and past experience
+                        from candidate resumes using advanced NLP.</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🧠</div>
+                    <div class="feature-title">AI Quiz Generation</div>
+                    <div class="feature-desc">Dynamically formulate tailored technical questions based on the
+                        candidate's unique profile and listed skillset.</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <div class="feature-title">Predictive Analytics</div>
+                    <div class="feature-desc">Leverage our custom trained machine learning models to instantly rank and
+                        evaluate candidates on a single unified platform.</div>
+                </div>
             </div>
-            <div class="form-group">
-                <input type="file" name="resume" accept=".pdf" style="padding: 0.8rem 1.2rem; cursor: pointer;"
-                    required>
-            </div>
-            <button type="submit">Analyze Candidate</button>
-        </form>
-        <a href="/dashboard" class="nav-link">View Dashboard →</a>
+        </div>
     </div>
 </body>
 

@@ -6,6 +6,7 @@ import os
 import requests
 import re
 from ml.resume_parser import extract_skills, extract_resume_text, match_resume
+from ml.skill_gap import skill_gap
 from generate_graph import generate_ranking_graph
 
 app = Flask(__name__)
@@ -86,7 +87,7 @@ def index():
             return redirect(url_for('dashboard'))
         else:
             return redirect(url_for('user_dashboard'))
-    return redirect(url_for('login'))
+    return render_template('index.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -251,9 +252,11 @@ def user_dashboard():
     if candidate:
         quiz_score = candidate[5]
         resume_score = candidate[7] or 0
+        candidate_skills = candidate[9] or ""
         for job in jobs:
             if quiz_score >= job[4] and resume_score >= job[5]:
-                matched_jobs.append(job)
+                missing = skill_gap(candidate_skills, job[3])
+                matched_jobs.append(job + (missing,))
                 
     return render_template('user_dashboard.html', candidate=candidate, matched_jobs=matched_jobs)
 
@@ -303,6 +306,24 @@ def dashboard():
         job_graphs.insert(0, {'id': 'global', 'title': 'Overall Macro Leaderboard', 'filename': 'ranking.png'})
     
     return render_template('dashboard.html', data=data, jobs=jobs, job_graphs=job_graphs)
+
+@app.route('/compare', methods=['POST'])
+def compare():
+    if 'user_id' not in session or session.get('is_admin') == 0:
+        return redirect(url_for('index'))
+        
+    compare_ids = request.form.getlist('compare_ids')
+    if not compare_ids:
+        return redirect(url_for('dashboard'))
+        
+    conn = get_db_connection()
+    c = conn.cursor()
+    placeholders = ','.join(['?'] * len(compare_ids))
+    query = f"SELECT * FROM candidates WHERE id IN ({placeholders})"
+    candidates = c.execute(query, compare_ids).fetchall()
+    conn.close()
+    
+    return render_template('compare.html', candidates=candidates)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

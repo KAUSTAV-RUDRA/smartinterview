@@ -94,7 +94,24 @@
                     <p style="margin-bottom: 0.5rem;"><strong>Description:</strong> {{ job[2] }}</p>
                     <p style="margin-bottom: 0.5rem;"><strong>Relevant Skills:</strong> <span style="color: #cbd5e1;">{{
                             job[3] }}</span></p>
-                    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">
+
+                    {% if job|length > 6 and job[6] %}
+                    <div
+                        style="margin-top: 0.75rem; padding: 0.75rem; background: rgba(239, 68, 68, 0.1); border-left: 4px solid #ef4444; border-radius: 6px;">
+                        <strong style="color: #ef4444; font-size: 0.95rem;">Action Needed - Skill Gap:</strong>
+                        <div style="color: #fca5a5; font-size: 0.9rem; margin-top: 0.25rem;">Missing: {{ job[6] |
+                            join(', ') | title }}</div>
+                    </div>
+                    {% elif job|length > 6 %}
+                    <div
+                        style="margin-top: 0.75rem; padding: 0.75rem; background: rgba(16, 185, 129, 0.1); border-left: 4px solid #10b981; border-radius: 6px;">
+                        <strong style="color: #10b981; font-size: 0.95rem;">Skill Gap Analysis:</strong>
+                        <div style="color: #6ee7b7; font-size: 0.9rem; margin-top: 0.25rem;">You have all the required
+                            skills for this role!</div>
+                    </div>
+                    {% endif %}
+
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 1rem; margin-bottom: 0;">
                         <em>Requirements: Min Quiz Score {{ job[4] }} &bull; Min Resume Score {{ job[5] }}</em>
                     </p>
                 </div>
