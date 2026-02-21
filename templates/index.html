@@ -4,328 +4,234 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Candidate AI Predictor - Home</title>
+    <title>SkillPalavar - Streamline Hiring</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        .hero {
-            text-align: center;
-            padding: 4rem 1rem;
-            animation: fadeIn 1s ease-out;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .hero h1 {
-            font-size: 4rem;
-            margin-bottom: 1.5rem;
-            line-height: 1.2;
-            background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: gradient-shift 5s infinite linear;
-            background-size: 200% auto;
-        }
-
-        .hero p {
-            font-size: 1.25rem;
-            color: var(--text-muted);
-            margin-bottom: 3rem;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-            line-height: 1.6;
-            text-align: center;
-        }
-
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-top: 4rem;
-            width: 100%;
-        }
-
-        .feature-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 2.5rem 2rem;
-            border-radius: 16px;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            text-align: left;
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* Add a subtle top border glow to feature cards */
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #818cf8, transparent);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .feature-card:hover::before {
-            opacity: 1;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-10px);
-            border-color: rgba(99, 102, 241, 0.3);
-            background: rgba(255, 255, 255, 0.05);
-            box-shadow: 0 10px 40px rgba(99, 102, 241, 0.15);
-        }
-
-        .feature-icon {
-            font-size: 3rem;
-            margin-bottom: 1.5rem;
-            display: inline-block;
-            background: rgba(99, 102, 241, 0.1);
-            padding: 1rem;
-            border-radius: 12px;
-        }
-
-        .feature-title {
-            font-size: 1.4rem;
-            font-weight: 600;
-            color: #f8fafc;
-            margin-bottom: 0.8rem;
-        }
-
-        .feature-desc {
-            font-size: 1rem;
-            color: #94a3b8;
-            line-height: 1.6;
-        }
-
-        .cta-buttons {
-            display: flex;
-            gap: 1.5rem;
-            justify-content: center;
-            margin-top: 1rem;
-        }
-
-        .btn {
-            padding: 1rem 2.5rem;
-            border-radius: 50px;
-            font-size: 1.15rem;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            display: inline-block;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            color: white;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.6);
-            color: white;
-            /* Ensure text color stays white */
-        }
-
-        .btn-outline {
-            background: transparent;
-            color: #f8fafc;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .btn-outline:hover {
-            border-color: #818cf8;
-            background: rgba(129, 140, 248, 0.1);
-            transform: translateY(-3px);
-            color: #818cf8;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes gradient-shift {
-            0% {
-                background-position: 0% 50%;
-            }
-
-            50% {
-                background-position: 100% 50%;
-            }
-
-            100% {
-                background-position: 0% 50%;
-            }
-        }
-
-        /* Abstract Background Elements */
-        .bg-shape {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            z-index: -1;
-            opacity: 0.5;
-        }
-
-        .shape-1 {
-            top: -100px;
-            left: -100px;
-            width: 500px;
-            height: 500px;
-            background: rgba(99, 102, 241, 0.3);
-            animation: float 10s infinite ease-in-out alternate;
-        }
-
-        .shape-2 {
-            bottom: -150px;
-            right: -100px;
-            width: 600px;
-            height: 600px;
-            background: rgba(192, 132, 252, 0.2);
-            animation: float 12s infinite ease-in-out alternate-reverse;
-        }
-
-        @keyframes float {
-            0% {
-                transform: translateY(0) scale(1);
-            }
-
-            100% {
-                transform: translateY(-50px) scale(1.1);
-            }
+        body {
+            align-items: flex-start;
+            padding: 0;
+            overflow-x: hidden;
+            display: block;
         }
 
         .container-xl {
             max-width: 1200px;
             margin: 0 auto;
-            position: relative;
-            z-index: 1;
             padding: 2rem;
             width: 100%;
         }
 
-        /* Nav Header outside login box style */
+        /* Clean Header */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 0 3rem 0;
-            opacity: 0;
-            animation: fadeIn 1s ease-out forwards;
-            animation-delay: 0.2s;
-            width: 100%;
+            padding: 1.5rem 0;
+            margin-bottom: 4rem;
         }
 
         .logo {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: 800;
-            color: white;
+            color: var(--text-main);
             text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.75rem;
+            letter-spacing: -0.5px;
         }
 
-        .logo span {
-            color: #818cf8;
+        .logo i {
+            color: var(--primary-color);
+            font-size: 1.5rem;
         }
 
-        body {
-            align-items: flex-start;
-            /* overrides center from style.css */
-            padding: 0;
-            overflow-x: hidden;
-            display: block;
-            /* Overrides display: flex from style.css to allow proper layout */
+        /* Minimal Hero Section */
+        .hero {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 6rem auto;
+            padding: 0 1rem;
         }
 
-        .pulse {
-            animation: pulse-animation 2s infinite;
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 1.5rem;
+            color: var(--text-main);
+            background: none;
+            
         }
 
-        @keyframes pulse-animation {
-            0% {
-                box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4);
+        .hero h1 span {
+            color: var(--primary-color);
+        }
+
+        .hero p {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+            line-height: 1.6;
+            max-width: 650px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 0.8rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            
+            border: 1px solid var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            border-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--card-border);
+        }
+
+        .btn-outline:hover {
+            
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+        }
+
+        /* Clean Features Grid */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 4rem;
+        }
+
+        .feature-item {
+            padding: 1.5rem;
+            text-align: left;
+        }
+
+        .feature-icon-wrapper {
+            width: 48px;
+            height: 48px;
+            background: #ccfbf1;
+            color: var(--primary-color);
+            border-radius: 12px;
+            /* slightly softer radius */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .feature-item h3 {
+            font-size: 1.25rem;
+            color: var(--text-main);
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .feature-item p {
+            font-size: 1rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
             }
 
-            70% {
-                box-shadow: 0 0 0 10px rgba(99, 102, 241, 0);
+            .features {
+                grid-template-columns: 1fr;
             }
 
-            100% {
-                box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+            .cta-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                text-align: center;
             }
         }
     </style>
 </head>
 
 <body>
-    <div class="bg-shape shape-1"></div>
-    <div class="bg-shape shape-2"></div>
-
     <div class="container-xl">
         <header class="header">
             <a href="/" class="logo">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2.5"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-                </svg>
-                Candidate<span>AI</span>
+                <i class="fa-solid fa-layer-group"></i>
+                SkillPalavar
             </a>
             <div>
-                <a href="/login" class="btn btn-outline" style="padding: 0.6rem 1.8rem; font-size: 1rem;">Log In</a>
+                <a href="/login" class="btn btn-outline" style="padding: 0.5rem 1.5rem;">Sign In</a>
             </div>
         </header>
 
-        <div class="hero">
-            <h1>Predict Hiring Success<br>with Artificial Intelligence</h1>
-            <p>Our advanced machine learning model analyzes resumes, technical quizzes, and background experience to
-                accurately predict candidate capability. Streamline your hiring process today.</p>
+        <section class="hero">
+            <h1>Hire the right people, <span>faster.</span></h1>
+            <p>A smart, professional platform for technical screening. We combine precise intelligent assessment parsing
+                with focused, dynamic questions to give you data-driven insights into every candidate.</p>
 
             <div class="cta-buttons">
-                <a href="/register" class="btn btn-primary pulse">Get Started Now</a>
-                <a href="/login" class="btn btn-outline">Access Dashboard</a>
+                <a href="/register" class="btn btn-primary">Create an Account</a>
+                <a href="/login" class="btn btn-outline">Go to Dashboard</a>
+            </div>
+        </section>
+
+        <section class="features">
+            <div class="feature-item">
+                <div class="feature-icon-wrapper">
+                    <i class="fa-solid fa-file-lines"></i>
+                </div>
+                <h3>Structured Resume Parsing</h3>
+                <p>We systematically read applicant resumes extracting valid technical skills and relevant background
+                    experience, organizing the data for straightforward review.</p>
             </div>
 
-            <div class="features">
-                <div class="feature-card">
-                    <div class="feature-icon">📄</div>
-                    <div class="feature-title">Smart Resume Parsing</div>
-                    <div class="feature-desc">Automatically extract technical skills, capabilities, and past experience
-                        from candidate resumes using advanced NLP.</div>
+            <div class="feature-item">
+                <div class="feature-icon-wrapper">
+                    <i class="fa-solid fa-code"></i>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🧠</div>
-                    <div class="feature-title">AI Quiz Generation</div>
-                    <div class="feature-desc">Dynamically formulate tailored technical questions based on the
-                        candidate's unique profile and listed skillset.</div>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📈</div>
-                    <div class="feature-title">Predictive Analytics</div>
-                    <div class="feature-desc">Leverage our custom trained machine learning models to instantly rank and
-                        evaluate candidates on a single unified platform.</div>
-                </div>
+                <h3>Targeted Skill Assessments</h3>
+                <p>Generate highly relevant, tailored technical questions based directly on the candidate's parsed tech
+                    stack—no more generic quizzes.</p>
             </div>
-        </div>
+
+            <div class="feature-item">
+                <div class="feature-icon-wrapper">
+                    <i class="fa-solid fa-chart-line"></i>
+                </div>
+                <h3>Clear Candidate Analytics</h3>
+                <p>View ranked candidates on a unified dashboard. See objective insights based on proven capabilities
+                    instead of subjective intuition.</p>
+            </div>
+        </section>
     </div>
 </body>
 

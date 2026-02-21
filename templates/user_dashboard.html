@@ -31,10 +31,10 @@
         .header h1 {
             margin: 0;
             font-size: 2.5rem;
-            background: linear-gradient(135deg, #818cf8, #34d399);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            
+            
+            
+            
         }
 
         .header-actions {
@@ -44,11 +44,11 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            
             padding: 0.75rem 1.5rem;
             border: none;
             border-radius: 8px;
-            color: white;
+            
             text-decoration: none;
             cursor: pointer;
             font-weight: 600;
@@ -64,11 +64,11 @@
         }
 
         .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            
+            border: 1px solid var(--card-border);
             padding: 0.75rem 1.5rem;
             border-radius: 8px;
-            color: white;
+            
             text-decoration: none;
             cursor: pointer;
             font-weight: 500;
@@ -76,7 +76,7 @@
         }
 
         .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.15);
+            
             border-color: rgba(255, 255, 255, 0.3);
         }
 
@@ -88,9 +88,9 @@
         }
 
         .stat-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            
+            
+            border: 1px solid var(--card-border);
             padding: 1.5rem;
             border-radius: 12px;
             text-align: center;
@@ -98,7 +98,7 @@
         }
 
         .stat-card:hover {
-            background: rgba(255, 255, 255, 0.08);
+            
             border-color: rgba(255, 255, 255, 0.2);
             transform: translateY(-5px);
         }
@@ -119,12 +119,12 @@
 
         .stat-resume {
             color: #34d399;
-            text-shadow: 0 0 10px rgba(52, 211, 153, 0.4);
+            
         }
 
         .stat-quiz {
-            color: #818cf8;
-            text-shadow: 0 0 10px rgba(129, 140, 248, 0.4);
+            color: var(--primary-color);
+            
         }
 
         .stat-unit {
@@ -133,8 +133,8 @@
         }
 
         .card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
+            
+            
             border: 1px solid var(--card-border);
             padding: 2rem;
             border-radius: 12px;
@@ -144,7 +144,7 @@
         .card h2 {
             margin: 0 0 1.5rem 0;
             font-size: 1.75rem;
-            color: #f8fafc;
+            
         }
 
         .card h3 {
@@ -156,7 +156,7 @@
         .progress-bar {
             width: 100%;
             height: 10px;
-            background: rgba(255, 255, 255, 0.1);
+            
             border-radius: 10px;
             overflow: hidden;
             margin: 0.75rem 0 1rem 0;
@@ -164,7 +164,7 @@
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #34d399, #10b981);
+            
             border-radius: 10px;
             transition: width 0.5s ease;
         }
@@ -177,9 +177,9 @@
         }
 
         .skill-tag {
-            background: rgba(99, 102, 241, 0.2);
+            background: #ccfbf1;
             border: 1px solid rgba(99, 102, 241, 0.4);
-            color: #a5b4fc;
+            color: var(--primary-color);
             padding: 0.5rem 1rem;
             border-radius: 20px;
             font-size: 0.9rem;
@@ -187,7 +187,7 @@
         }
 
         .skill-tag:hover {
-            background: rgba(99, 102, 241, 0.3);
+            background: #ccfbf1;
             border-color: rgba(99, 102, 241, 0.6);
         }
 
@@ -232,11 +232,11 @@
 
         .badge-info {
             background: rgba(129, 140, 248, 0.2);
-            color: #a5b4fc;
+            color: var(--primary-color);
         }
 
         .job-card {
-            background: rgba(99, 102, 241, 0.08);
+            background: #ccfbf1;
             border: 1px solid rgba(99, 102, 241, 0.2);
             padding: 1.75rem;
             border-radius: 12px;
@@ -245,13 +245,13 @@
         }
 
         .job-card:hover {
-            background: rgba(99, 102, 241, 0.12);
+            background: #ccfbf1;
             border-color: rgba(99, 102, 241, 0.3);
             transform: translateX(5px);
         }
 
         .job-title {
-            color: #a5b4fc;
+            color: var(--primary-color);
             margin: 0 0 0.75rem 0;
             font-size: 1.3rem;
             font-weight: 700;
@@ -277,7 +277,7 @@
         }
 
         .meta-value {
-            color: #cbd5e1;
+            color: var(--text-muted);
         }
 
         .missing-skills-alert {
@@ -313,7 +313,7 @@
         .empty-state {
             text-align: center;
             padding: 3rem 1.5rem;
-            background: rgba(255, 255, 255, 0.02);
+            
             border-radius: 8px;
         }
 
@@ -374,7 +374,7 @@
             <h1>📊 My Dashboard</h1>
             <div class="header-actions">
                 <a href="/career_ai" class="btn-primary"
-                    style="background: linear-gradient(135deg, #10b981, #059669);">🤖 AI Counselor</a>
+                    style="">🤖 AI Counselor</a>
                 <a href="/apply" class="btn-primary">+ New Application</a>
                 <a href="/logout" class="btn-secondary">Log Out</a>
             </div>
@@ -388,7 +388,7 @@
                 <div class="stat-value stat-resume">{{ candidate[7] or 0 }}<span class="stat-unit">/100</span></div>
                 <div class="progress-bar">
                     <div class="progress-fill"
-                        style="width: {{ (candidate[7] or 0) * 100 / 100 }}%; background: linear-gradient(90deg, #34d399, #10b981);">
+                        style="width: {{ (candidate[7] or 0) * 100 / 100 }}%; ">
                     </div>
                 </div>
                 <div style="font-size: 0.85rem; color: var(--text-muted);">AI Evaluated</div>
@@ -398,7 +398,7 @@
                 <div class="stat-value stat-quiz">{{ candidate[5] }}<span class="stat-unit">/100</span></div>
                 <div class="progress-bar">
                     <div class="progress-fill"
-                        style="width: {{ candidate[5] }}%; background: linear-gradient(90deg, #818cf8, #6366f1);"></div>
+                        style="width: {{ candidate[5] }}%; "></div>
                 </div>
                 <div style="font-size: 0.85rem; color: var(--text-muted);">Skills Assessment</div>
             </div>
@@ -408,7 +408,7 @@
                 </div>
                 <div class="progress-bar">
                     <div class="progress-fill"
-                        style="width: {{ min(candidate[3] * 10, 100) }}%; background: linear-gradient(90deg, #fbbf24, #f59e0b);">
+                        style="width: {{ min(candidate[3] * 10, 100) }}%; ">
                     </div>
                 </div>
                 <div style="font-size: 0.85rem; color: var(--text-muted);">Professional</div>
@@ -436,7 +436,7 @@
             {% if candidate[8] %}
             <div class="feedback-section">
                 <div class="feedback-title">✨ Resume Feedback</div>
-                <p style="margin: 0; color: #e2e8f0; line-height: 1.6;">{{ candidate[8] }}</p>
+                <p style="margin: 0; color: var(--text-main); line-height: 1.6;">{{ candidate[8] }}</p>
             </div>
             {% endif %}
         </div>
@@ -499,7 +499,7 @@
                 </div>
 
                 <div style="margin: 1rem 0;">
-                    <h4 style="color: #cbd5e1; margin-bottom: 0.75rem; font-size: 0.95rem;">Required Skills:</h4>
+                    <h4 style="color: var(--text-muted); margin-bottom: 0.75rem; font-size: 0.95rem;">Required Skills:</h4>
                     <div class="skills-container">
                         {% for skill in job[3].split(',') %}
                         <span class="skill-tag">{{ skill.strip() }}</span>
@@ -545,7 +545,7 @@
         <div class="card">
             <div style="text-align: center; padding: 2rem;">
                 <div style="font-size: 3rem; margin-bottom: 1rem;">🚀</div>
-                <h2 style="margin-bottom: 1rem; color: #f8fafc;">Welcome to SkillPalavar</h2>
+                <h2 style="margin-bottom: 1rem; ">Welcome to SkillPalavar</h2>
                 <p style="margin-bottom: 1.5rem; color: var(--text-muted); font-size: 1.1rem;">
                     Begin your journey to find the perfect role that matches your skills and aspirations.
                 </p>

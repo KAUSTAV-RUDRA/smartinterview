@@ -12,7 +12,7 @@
             padding: 3rem;
             border-radius: 16px;
             margin: 2rem 0;
-            background: rgba(0, 0, 0, 0.2);
+            
             border: 1px solid var(--card-border);
         }
 
@@ -42,11 +42,11 @@
 
             {% if result == 1 %}
             <h2 class="success-text">SELECTED</h2>
-            <p style="color: #cbd5e1; margin-top: 1.5rem; font-size: 1.1rem;">Excellent work! You achieved a quiz score
+            <p style="color: var(--text-muted); margin-top: 1.5rem; font-size: 1.1rem;">Excellent work! You achieved a quiz score
                 of <strong>{{ score }}/100</strong> and have met the criteria.</p>
             {% else %}
             <h2 class="danger-text">REJECTED</h2>
-            <p style="color: #cbd5e1; margin-top: 1.5rem; font-size: 1.1rem;">Unfortunately, your profile or quiz score
+            <p style="color: var(--text-muted); margin-top: 1.5rem; font-size: 1.1rem;">Unfortunately, your profile or quiz score
                 of <strong>{{ score }}/100</strong> did not meet the criteria.</p>
             {% endif %}
         </div>
