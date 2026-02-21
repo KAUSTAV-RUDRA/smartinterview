@@ -217,9 +217,9 @@
 
             <div class="loading-state" id="loadingState">
                 <div class="spinner"></div>
-                <h3 style="color: #6ee7b7; margin: 0;">Analyzing Profile & Jobs...</h3>
-                <p style="color: var(--text-muted); margin-top: 0.5rem;">This may take up to 30 seconds as the AI reads
-                    your profile.</p>
+                <h3 style="color: #6ee7b7; margin: 0;" id="loadingTitle">Analyzing Profile & Jobs...</h3>
+                <p style="color: var(--text-muted); margin-top: 0.5rem;" id="loadingDesc">This may take up to 30 seconds
+                    as the AI reads your profile.</p>
             </div>
 
             {% if analysis_result %}
@@ -248,6 +248,28 @@
                 document.getElementById('analysisFormRetry').style.display = 'none';
             }
             document.getElementById('loadingState').style.display = 'block';
+
+            let secondsPassed = 0;
+            const loadingTitle = document.getElementById('loadingTitle');
+            const loadingDesc = document.getElementById('loadingDesc');
+
+            const timer = setInterval(() => {
+                secondsPassed++;
+                if (secondsPassed === 5) {
+                    loadingTitle.textContent = "Comparing with Market Demands...";
+                    loadingDesc.textContent = "Checking your skills against current job postings.";
+                } else if (secondsPassed === 12) {
+                    loadingTitle.textContent = "Identifying Skill Gaps...";
+                    loadingDesc.textContent = "Figuring out what you need to learn to get hired.";
+                } else if (secondsPassed === 20) {
+                    loadingTitle.textContent = "Formulating Career Advice...";
+                    loadingDesc.textContent = "Generating personalized steps for your growth.";
+                } else if (secondsPassed > 45) {
+                    clearInterval(timer);
+                    loadingTitle.textContent = "Almost there...";
+                    loadingDesc.textContent = "The AI is taking a bit longer to generate your detailed report.";
+                }
+            }, 1000);
         }
     </script>
 </body>

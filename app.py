@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, Response
 import sqlite3
 import joblib
 import pandas as pd
@@ -322,7 +322,37 @@ def dashboard():
     if global_graph_exists:
         job_graphs.insert(0, {'id': 'global', 'title': 'Overall Macro Leaderboard', 'filename': 'ranking.png'})
     
-    return render_template('dashboard.html', data=data, jobs=jobs, job_graphs=job_graphs)
+    # Prepare chart data
+    selected_count = sum(1 for row in data if row[6] == 1)
+    pending_count = sum(1 for row in data if row[6] == 0)
+    scores = [(row[5] or 0, row[7] or 0) for row in data]
+    avg_quiz = round(sum(s[0] for s in scores) / len(scores) if scores else 0, 1)
+    avg_resume = round(sum(s[1] for s in scores) / len(scores) if scores else 0, 1)
+    
+    chart_data = {
+        'status_labels': ['Selected', 'Pending Review'],
+        'status_counts': [selected_count, pending_count],
+        'avg_quiz': avg_quiz,
+        'avg_resume': avg_resume
+    }
+    
+    return render_template('dashboard.html', data=data, jobs=jobs, job_graphs=job_graphs, chart_data=chart_data)
+
+@app.route('/admin/export_csv')
+def export_csv():
+    if 'user_id' not in session or session.get('is_admin') == 0:
+        return redirect(url_for('index'))
+        
+    conn = get_db_connection()
+    df = pd.read_sql_query("SELECT * FROM candidates", conn)
+    conn.close()
+    
+    csv_data = df.to_csv(index=False)
+    return Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=candidates.csv"}
+    )
 
 @app.route('/compare', methods=['POST'])
 def compare():
