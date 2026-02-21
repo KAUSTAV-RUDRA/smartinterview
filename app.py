@@ -122,12 +122,11 @@ def register():
     error = None
     if request.method == 'POST':
         u = request.form['username']
-        e = request.form.get('email', 'candidate@example.com')
         p = request.form['password']
         
         conn = get_db_connection()
         try:
-            conn.execute("INSERT INTO users (username, password, is_admin, email) VALUES (?, ?, 0, ?)", (u, p, e))
+            conn.execute("INSERT INTO users (username, password, is_admin) VALUES (?, ?, 0)", (u, p))
             conn.commit()
             conn.close()
             return redirect(url_for('login'))
@@ -147,14 +146,8 @@ def apply():
     if 'user_id' not in session or session.get('is_admin') == 1:
         return redirect(url_for('index'))
         
-    conn = get_db_connection()
-    user_data = conn.execute("SELECT email FROM users WHERE id=?", (session['user_id'],)).fetchone()
-    conn.close()
-    user_email = user_data[0] if user_data and user_data[0] else 'candidate@example.com'
-        
     if request.method == 'POST':
         name = request.form['name']
-        email = request.form.get('email', user_email)
         exp = int(request.form['exp'])
         resume = request.files['resume']
         
@@ -178,7 +171,6 @@ def apply():
                     max_match = score
         
         session['candidate_name'] = name
-        session['candidate_email'] = email
         session['candidate_exp'] = exp
         session['candidate_skills_count'] = skills_count
         session['candidate_skills_str'] = skills_str
@@ -226,10 +218,9 @@ def quiz():
                 print("Model prediction error:", e)
         
         conn = get_db_connection()
-        email_val = session.get('candidate_email', 'candidate@example.com')
         try:
-            conn.execute("INSERT INTO candidates (user_id, name, experience, skills, quiz, selected, resume_score, summary, skills_list, resume_match, email) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                         (session['user_id'], session['candidate_name'], exp, skills_count, score, result, session.get('resume_score', 0), session.get('resume_summary', ''), skills_str, resume_match, email_val))
+            conn.execute("INSERT INTO candidates (user_id, name, experience, skills, quiz, selected, resume_score, summary, skills_list, resume_match) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                         (session['user_id'], session['candidate_name'], exp, skills_count, score, result, session.get('resume_score', 0), session.get('resume_summary', ''), skills_str, resume_match))
         except sqlite3.OperationalError:
             # Fallback if some columns don't exist
             conn.execute("INSERT INTO candidates (user_id, name, experience, skills, quiz, selected, resume_score, summary) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
@@ -366,7 +357,7 @@ def candidate_decision(candidate_id):
         
     conn = get_db_connection()
     c = conn.cursor()
-    candidate = c.execute("SELECT id, name, quiz, resume_score, email FROM candidates WHERE id=?", (candidate_id,)).fetchone()
+    candidate = c.execute("SELECT id, name, quiz, resume_score FROM candidates WHERE id=?", (candidate_id,)).fetchone()
     if not candidate:
         conn.close()
         return jsonify({'error': 'Candidate not found'}), 404
