@@ -13,6 +13,9 @@ app = Flask(__name__)
 app.secret_key = "secret_candidate_key"
 os.makedirs('uploads', exist_ok=True)
 
+# Add built-in functions to Jinja2 environment
+app.jinja_env.globals.update(min=min, max=max)
+
 model_path = os.path.join(os.path.dirname(__file__), 'model.pkl')
 try:
     model = joblib.load(model_path)
