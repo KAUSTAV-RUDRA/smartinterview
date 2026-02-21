@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Predictor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <div class="container" style="max-width: 400px;">
+        <h1>Log In</h1>
+        <p class="subtitle">Access Candidate AI Predictor</p>
+
+        {% if error %}
+        <div
+            style="background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger); color: var(--danger); padding: 1rem; border-radius: 10px; margin-bottom: 1.5rem; text-align: center;">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <form action="/login" method="POST">
+            <div class="form-group">
+                <input type="text" name="username" placeholder="Username" required>
+            </div>
+            <div class="form-group">
+                <input type="password" name="password" placeholder="Password" required>
+            </div>
+            <button type="submit">Log In</button>
+        </form>
+
+        <a href="/register" class="nav-link" style="margin-top: 1rem; font-weight: normal; font-size: 0.95rem;">Don't
+            have an account? <b style="font-weight: 600;">Register Here</b></a>
+    </div>
+</body>
+
+</html>

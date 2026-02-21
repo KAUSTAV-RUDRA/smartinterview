@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results - Predictor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .result-box {
+            text-align: center;
+            padding: 3rem;
+            border-radius: 16px;
+            margin: 2rem 0;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--card-border);
+        }
+
+        .success-text {
+            color: var(--success);
+            font-weight: 800;
+            font-size: 3rem;
+        }
+
+        .danger-text {
+            color: var(--danger);
+            font-weight: 800;
+            font-size: 3rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" style="max-width: 500px; text-align: center;">
+        <h1>Evaluation Complete</h1>
+        <p class="subtitle" style="margin-bottom: 0;">Our ML system has analyzed your profile and quiz.</p>
+
+        <div class="result-box">
+            <p
+                style="margin-bottom: 0.5rem; color: var(--text-muted); text-transform: uppercase; font-size: 0.9rem; letter-spacing: 2px;">
+                AI Predictor Outcome</p>
+
+            {% if result == 1 %}
+            <h2 class="success-text">SELECTED</h2>
+            <p style="color: #cbd5e1; margin-top: 1.5rem; font-size: 1.1rem;">Excellent work! You achieved a quiz score
+                of <strong>{{ score }}/100</strong> and have met the criteria.</p>
+            {% else %}
+            <h2 class="danger-text">REJECTED</h2>
+            <p style="color: #cbd5e1; margin-top: 1.5rem; font-size: 1.1rem;">Unfortunately, your profile or quiz score
+                of <strong>{{ score }}/100</strong> did not meet the criteria.</p>
+            {% endif %}
+        </div>
+
+        <a href="/logout" class="nav-link">Sign Out</a>
+    </div>
+</body>
+
+</html>

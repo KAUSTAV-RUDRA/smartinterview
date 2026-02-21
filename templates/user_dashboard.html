@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidate Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+
+        .job-card {
+            background: rgba(99, 102, 241, 0.05);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .job-title {
+            color: #818cf8;
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" style="max-width: 800px; padding: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h1 style="margin: 0;">My Dashboard</h1>
+            <div style="display: flex; gap: 1rem;">
+                <a href="/apply" class="btn"
+                    style="padding: 0.5rem 1rem; text-decoration: none; border-radius: 6px;">Submit New Application</a>
+                <a href="/logout" class="badge"
+                    style="text-decoration: none; background: rgba(255,255,255,0.1); padding: 0.5rem 1rem;">Log Out</a>
+            </div>
+        </div>
+
+        {% if candidate %}
+        <div class="card">
+            <h2>Application Summary</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1rem;">
+                <div
+                    style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 1.5rem; border: 1px solid rgba(52, 211, 153, 0.2); box-shadow: 0 0 15px rgba(52, 211, 153, 0.05); text-align: center;">
+                    <h3
+                        style="color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">
+                        Resume Score</h3>
+                    <p
+                        style="font-size: 2.5rem; font-weight: 800; margin: 0; color: #34d399; text-shadow: 0 0 10px rgba(52, 211, 153, 0.4);">
+                        {{ candidate[7] or 0 }}<span style="font-size: 1rem; color: var(--text-muted);">/100</span></p>
+                </div>
+                <div
+                    style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 1.5rem; border: 1px solid rgba(129, 140, 248, 0.2); box-shadow: var(--accent-glow); text-align: center;">
+                    <h3
+                        style="color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">
+                        MCQ Quiz Score</h3>
+                    <p
+                        style="font-size: 2.5rem; font-weight: 800; margin: 0; color: #818cf8; text-shadow: 0 0 10px rgba(129, 140, 248, 0.4);">
+                        {{ candidate[5] }}<span style="font-size: 1rem; color: var(--text-muted);">/100</span></p>
+                </div>
+            </div>
+
+            {% if candidate|length > 9 and candidate[9] %}
+            <div
+                style="margin-top: 1.5rem; padding: 1rem; background: rgba(255,255,255,0.02); border-left: 3px solid #facc15; border-radius: 4px;">
+                <h3 style="color: #facc15; margin-bottom: 0.5rem; font-size: 0.95rem;">Extracted Skills</h3>
+                <p style="line-height: 1.4; color: #e2e8f0; font-size: 0.9rem;">{{ candidate[9] }}</p>
+            </div>
+            {% endif %}
+
+            <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(255,255,255,0.02); border-radius: 8px;">
+                <h3 style="color: var(--text-muted); margin-bottom: 0.5rem;">AI Resume Feedback</h3>
+                <p style="line-height: 1.6; font-size: 0.95rem;">{{ candidate[8] }}</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Recommended Jobs for You</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Based on your resume evaluation and quiz scores,
+                you meet the requirements for the following roles:</p>
+
+            {% if matched_jobs %}
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                {% for job in matched_jobs %}
+                <div class="job-card">
+                    <h3 class="job-title">{{ job[1] }}</h3>
+                    <p style="margin-bottom: 0.5rem;"><strong>Description:</strong> {{ job[2] }}</p>
+                    <p style="margin-bottom: 0.5rem;"><strong>Relevant Skills:</strong> <span style="color: #cbd5e1;">{{
+                            job[3] }}</span></p>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">
+                        <em>Requirements: Min Quiz Score {{ job[4] }} &bull; Min Resume Score {{ job[5] }}</em>
+                    </p>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div style="text-align: center; padding: 2rem; background: rgba(255,255,255,0.02); border-radius: 8px;">
+                <p style="color: #94a3b8; margin: 0;">No matching jobs found at this time. Check back later or try
+                    applying again to improve your scores.</p>
+            </div>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="card" style="text-align: center; padding: 3rem;">
+            <h2 style="margin-bottom: 1rem;">Welcome to SkillPalavar</h2>
+            <p style="margin-bottom: 2rem; color: var(--text-muted);">Please submit your application to get your resume
+                evaluated, take a skill assessment, and find matching jobs.</p>
+            <a href="/apply" class="btn" style="text-decoration: none;">Start Application</a>
+        </div>
+        {% endif %}
+    </div>
+</body>
+
+</html>
