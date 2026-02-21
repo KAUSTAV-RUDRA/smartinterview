@@ -29,6 +29,23 @@
                 Out</a>
         </div>
 
+        {% if job_graphs %}
+        <div style="margin-bottom: 2rem;">
+            {% for graph in job_graphs %}
+            <div
+                style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--card-border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;">
+                <h3
+                    style="color: #cbd5e1; margin-bottom: 1rem; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.5rem;">
+                    {{ graph.title }}</h3>
+                <div style="display: flex; justify-content: center; align-items: center;">
+                    <img src="{{ url_for('static', filename=graph.filename) }}?v={{ range(1, 10000) | random }}"
+                        alt="Candidate Rankings Graph" style="max-width: 100%; border-radius: 8px;">
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
         <table style="width: 100%; margin-top: 1rem;">
             <thead>
                 <tr>

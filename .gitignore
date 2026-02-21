@@ -26,3 +26,5 @@ coverage.xml
 .DS_Store
 uploads/
 database/*.db
+static/ranking*.png
+model.pkl

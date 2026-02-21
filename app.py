@@ -6,6 +6,7 @@ import os
 import requests
 import re
 from ml.resume_parser import extract_skills, extract_resume_text, match_resume
+from generate_graph import generate_ranking_graph
 
 app = Flask(__name__)
 app.secret_key = "secret_candidate_key"
@@ -284,7 +285,24 @@ def dashboard():
     jobs = c.execute("SELECT * FROM jobs ORDER BY id DESC").fetchall()
     conn.close()
     
-    return render_template('dashboard.html', data=data, jobs=jobs)
+    # Generate individual job ranking graphs
+    job_graphs = []
+    
+    for job in jobs:
+        job_id = job[0]
+        graph_filename = f'ranking_job_{job_id}.png'
+        graph_path = os.path.join(app.root_path, 'static', graph_filename)
+        # Attempt to create dynamic specific graph, if it works, append to list
+        if generate_ranking_graph(DB_PATH, graph_path, job_id=job_id):
+            job_graphs.append({'id': job_id, 'title': job[1], 'filename': graph_filename})
+            
+    # As a fallback, render the generic one as well just in case they want a macro perspective
+    global_graph_path = os.path.join(app.root_path, 'static', 'ranking.png')
+    global_graph_exists = generate_ranking_graph(DB_PATH, global_graph_path)
+    if global_graph_exists:
+        job_graphs.insert(0, {'id': 'global', 'title': 'Overall Macro Leaderboard', 'filename': 'ranking.png'})
+    
+    return render_template('dashboard.html', data=data, jobs=jobs, job_graphs=job_graphs)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
