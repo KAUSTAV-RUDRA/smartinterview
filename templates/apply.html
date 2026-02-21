@@ -45,6 +45,10 @@
             <h3 style="color: var(--primary-color); margin: 0;">Generating Tailored Quiz...</h3>
             <p style="color: var(--text-muted); margin-top: 0.5rem;">Our AI is analyzing your resume to create custom
                 technical questions.</p>
+            <div style="margin-top: 1.5rem; display: inline-block; padding: 0.5rem 1rem; background: #ccfbf1; border-radius: 8px; color: var(--primary-color); font-weight: 600;"
+                id="timerWrapper">
+                Estimated time remaining: <span id="countdown">30</span>s
+            </div>
         </div>
 
         <form action="/apply" method="POST" enctype="multipart/form-data" id="applyForm" onsubmit="showLoading()">
@@ -76,6 +80,20 @@
             document.getElementById('form-subtitle').style.display = 'none';
             document.getElementById('logoutLink').style.display = 'none';
             document.getElementById('loadingState').style.display = 'block';
+
+            let secondsLeft = 30;
+            const countdownSpan = document.getElementById('countdown');
+            const timerWrapper = document.getElementById('timerWrapper');
+
+            const timer = setInterval(() => {
+                secondsLeft--;
+                if (secondsLeft > 0) {
+                    countdownSpan.textContent = secondsLeft;
+                } else {
+                    clearInterval(timer);
+                    timerWrapper.textContent = "Almost done! Finalizing your questions...";
+                }
+            }, 1000);
         }
     </script>
 </body>
