@@ -382,7 +382,7 @@ def career_ai():
                 "model": "gemma3:4b",
                 "prompt": prompt,
                 "stream": False
-            }, timeout=45)
+            }, timeout=120)
             json_data = r.json()
             if 'response' in json_data:
                 analysis_result = json_data['response'].strip()
