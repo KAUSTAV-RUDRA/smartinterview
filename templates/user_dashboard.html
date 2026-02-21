@@ -351,7 +351,8 @@
                 width: 100%;
             }
 
-            .btn-primary, .btn-secondary {
+            .btn-primary,
+            .btn-secondary {
                 flex: 1;
                 justify-content: center;
             }
@@ -372,6 +373,8 @@
         <div class="header">
             <h1>📊 My Dashboard</h1>
             <div class="header-actions">
+                <a href="/career_ai" class="btn-primary"
+                    style="background: linear-gradient(135deg, #10b981, #059669);">🤖 AI Counselor</a>
                 <a href="/apply" class="btn-primary">+ New Application</a>
                 <a href="/logout" class="btn-secondary">Log Out</a>
             </div>
@@ -384,7 +387,9 @@
                 <div class="stat-label">Resume Score</div>
                 <div class="stat-value stat-resume">{{ candidate[7] or 0 }}<span class="stat-unit">/100</span></div>
                 <div class="progress-bar">
-                    <div class="progress-fill" style="width: {{ (candidate[7] or 0) * 100 / 100 }}%; background: linear-gradient(90deg, #34d399, #10b981);"></div>
+                    <div class="progress-fill"
+                        style="width: {{ (candidate[7] or 0) * 100 / 100 }}%; background: linear-gradient(90deg, #34d399, #10b981);">
+                    </div>
                 </div>
                 <div style="font-size: 0.85rem; color: var(--text-muted);">AI Evaluated</div>
             </div>
@@ -392,15 +397,19 @@
                 <div class="stat-label">Quiz Score</div>
                 <div class="stat-value stat-quiz">{{ candidate[5] }}<span class="stat-unit">/100</span></div>
                 <div class="progress-bar">
-                    <div class="progress-fill" style="width: {{ candidate[5] }}%; background: linear-gradient(90deg, #818cf8, #6366f1);"></div>
+                    <div class="progress-fill"
+                        style="width: {{ candidate[5] }}%; background: linear-gradient(90deg, #818cf8, #6366f1);"></div>
                 </div>
                 <div style="font-size: 0.85rem; color: var(--text-muted);">Skills Assessment</div>
             </div>
             <div class="stat-card">
                 <div class="stat-label">Experience</div>
-                <div class="stat-value" style="color: #fbbf24;">{{ candidate[3] }}<span class="stat-unit">yrs</span></div>
+                <div class="stat-value" style="color: #fbbf24;">{{ candidate[3] }}<span class="stat-unit">yrs</span>
+                </div>
                 <div class="progress-bar">
-                    <div class="progress-fill" style="width: {{ min(candidate[3] * 10, 100) }}%; background: linear-gradient(90deg, #fbbf24, #f59e0b);"></div>
+                    <div class="progress-fill"
+                        style="width: {{ min(candidate[3] * 10, 100) }}%; background: linear-gradient(90deg, #fbbf24, #f59e0b);">
+                    </div>
                 </div>
                 <div style="font-size: 0.85rem; color: var(--text-muted);">Professional</div>
             </div>
@@ -416,9 +425,9 @@
             <h3>Your Current Skills</h3>
             <div class="skills-container">
                 {% if candidate[9] %}
-                    {% for skill in candidate[9].split(',') %}
-                    <span class="skill-tag">{{ skill.strip() }}</span>
-                    {% endfor %}
+                {% for skill in candidate[9].split(',') %}
+                <span class="skill-tag">{{ skill.strip() }}</span>
+                {% endfor %}
                 {% else %}
                 <span style="color: var(--text-muted);">No skills listed</span>
                 {% endif %}
@@ -439,7 +448,8 @@
                 <div class="badge-icon badge-warning">⚠️</div>
                 <div>Skills to Master</div>
             </div>
-            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">These skills are required by available job positions. Learning them will expand your opportunities!</p>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">These skills are required by available job
+                positions. Learning them will expand your opportunities!</p>
 
             <div class="skills-container">
                 {% for skill in missing_skills %}
@@ -447,9 +457,12 @@
                 {% endfor %}
             </div>
 
-            <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(59, 130, 246, 0.1); border-left: 3px solid #3b82f6; border-radius: 6px;">
+            <div
+                style="margin-top: 1.5rem; padding: 1rem; background: rgba(59, 130, 246, 0.1); border-left: 3px solid #3b82f6; border-radius: 6px;">
                 <p style="margin: 0; color: #93c5fd; font-size: 0.9rem;">
-                    💡 <strong>Pro Tip:</strong> Acquiring these skills will significantly improve your match rate with available positions. Consider online courses like Udemy, Coursera, or your preferred learning platform!
+                    💡 <strong>Pro Tip:</strong> Acquiring these skills will significantly improve your match rate with
+                    available positions. Consider online courses like Udemy, Coursera, or your preferred learning
+                    platform!
                 </p>
             </div>
         </div>
@@ -463,7 +476,8 @@
             </div>
 
             {% if matched_jobs %}
-            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Based on your scores, you qualify for {{ matched_jobs | length }} available position{{ 's' if matched_jobs | length != 1 else '' }}:</p>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Based on your scores, you qualify for {{
+                matched_jobs | length }} available position{{ 's' if matched_jobs | length != 1 else '' }}:</p>
 
             {% for job in matched_jobs %}
             <div class="job-card">
@@ -501,12 +515,14 @@
                         <span class="skill-tag skill-missing">{{ skill | title }}</span>
                         {% endfor %}
                     </div>
-                    <p style="font-size: 0.85rem; margin-top: 0.75rem; color: #fca5a5;">Learn these {{ job[6] | length }} skill{{ 's' if job[6] | length != 1 else '' }} to be fully qualified for {{ job[1] }}</p>
+                    <p style="font-size: 0.85rem; margin-top: 0.75rem; color: #fca5a5;">Learn these {{ job[6] | length
+                        }} skill{{ 's' if job[6] | length != 1 else '' }} to be fully qualified for {{ job[1] }}</p>
                 </div>
                 {% else %}
                 <div class="all-skills-alert">
                     <h4>✨ Great News!</h4>
-                    <p style="margin: 0; font-size: 0.9rem; color: #6ee7b7;">You have all the required skills for this position. You're ready to apply!</p>
+                    <p style="margin: 0; font-size: 0.9rem; color: #6ee7b7;">You have all the required skills for this
+                        position. You're ready to apply!</p>
                 </div>
                 {% endif %}
             </div>
@@ -516,8 +532,10 @@
             <div class="empty-state">
                 <div style="font-size: 2rem; margin-bottom: 1rem;">🔍</div>
                 <p><strong>No Matching Positions Yet</strong></p>
-                <p>Improve your quiz score and resume evaluation to unlock more job opportunities. Start a new application to improve your scores!</p>
-                <a href="/apply" class="btn-primary" style="text-decoration: none; display: inline-block;">Start New Application</a>
+                <p>Improve your quiz score and resume evaluation to unlock more job opportunities. Start a new
+                    application to improve your scores!</p>
+                <a href="/apply" class="btn-primary" style="text-decoration: none; display: inline-block;">Start New
+                    Application</a>
             </div>
             {% endif %}
         </div>
@@ -532,13 +550,16 @@
                     Begin your journey to find the perfect role that matches your skills and aspirations.
                 </p>
                 <p style="margin-bottom: 2rem; color: var(--text-muted);">
-                    Submit your resume, take our skill assessment quiz, and we'll match you with perfect job opportunities based on your profile.
+                    Submit your resume, take our skill assessment quiz, and we'll match you with perfect job
+                    opportunities based on your profile.
                 </p>
-                <a href="/apply" class="btn-primary" style="text-decoration: none; display: inline-block;">Start Your Application</a>
+                <a href="/apply" class="btn-primary" style="text-decoration: none; display: inline-block;">Start Your
+                    Application</a>
             </div>
         </div>
         {% endif %}
     </div>
+
 </body>
 
 </html>

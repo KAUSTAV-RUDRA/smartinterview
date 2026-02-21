@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 import sqlite3
 import joblib
 import pandas as pd
@@ -341,6 +341,62 @@ def compare():
     conn.close()
     
     return render_template('compare.html', candidates=candidates)
+
+@app.route('/career_ai', methods=['GET', 'POST'])
+def career_ai():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+        
+    conn = get_db_connection()
+    c = conn.cursor()
+    candidate = c.execute("SELECT * FROM candidates WHERE user_id=? ORDER BY id DESC LIMIT 1", (session['user_id'],)).fetchone()
+    jobs = c.execute("SELECT * FROM jobs").fetchall()
+    conn.close()
+    
+    analysis_result = None
+    loading = False
+    error = None
+    
+    if request.method == 'POST':
+        loading = True
+        context = ""
+        if candidate:
+            skills = candidate[9] or "None"
+            resume_summary = candidate[8] or "None"
+            context = f"Candidate Skills: {skills}. Resume Summary (based on evaluation): {resume_summary}. "
+            
+            all_required_skills = set()
+            for job in jobs:
+                for s in job[3].split(","):
+                    all_required_skills.add(s.strip().lower())
+                    
+            cand_skills_lower = skills.lower()
+            missing = [s for s in all_required_skills if s not in cand_skills_lower]
+            context += f"Often required job skills missing from candidate profile: {', '.join(missing)}. "
+            
+        prompt = f"You are an expert AI Career Counselor. Here is the user's profile: {context}\n"
+        prompt += "Based on this profile and the available job requirements, thoroughly analyze the resume. Specifically: 1. Point out explicitly the limitations or weaknesses of this individual resume/skillset. 2. Strongly highlight what ALL skills are important and should be learned to improve their job prospects for the available jobs. Use clear formatting like bullet points."
+        
+        try:
+            r = requests.post('http://localhost:11434/api/generate', json={
+                "model": "gemma3:4b",
+                "prompt": prompt,
+                "stream": False
+            }, timeout=45)
+            json_data = r.json()
+            if 'response' in json_data:
+                analysis_result = json_data['response'].strip()
+            else:
+                error = "Unexpected response from AI."
+        except requests.exceptions.Timeout:
+            error = "The AI is taking too long to respond. Please try again."
+        except Exception as e:
+            print("Ollama Error (career ai):", e)
+            error = "Sorry, I am having trouble connecting to my AI brain. Is Ollama running?"
+            
+        loading = False
+        
+    return render_template('career_ai.html', analysis_result=analysis_result, error=error)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
